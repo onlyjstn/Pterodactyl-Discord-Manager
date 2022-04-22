@@ -1,4 +1,3 @@
-# APH
 
 # What is this Repo?
 In this Repository the current state of the Bot ( Todo-List and upcoming Features ) is displayed. Upon Release this Repository will be populated with all of the respective Bot Files
