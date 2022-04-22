@@ -9,7 +9,7 @@ This Bot is used to interact with the Pterodactyl Panel API and let the Users cr
 # Where are the Bot Files / Where can I download them?
 The Bot Files will be kept Closed-Source until the TODO List has been completed.
 There is not ETA. 
-For Questions either open a Github Issue or Message me on Discord ```*Einkornwolf#1506*```
+For Questions either open a Github Issue or Message me on Discord ```Einkornwolf#1506```
 
 
 # Copyright
