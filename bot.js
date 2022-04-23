@@ -1,15 +1,26 @@
-
 // Alle requires und Requierements
 const dotenv = require('dotenv');
 
 //Initializte DotEnv
-dotenv.config({ path: './config.env'})
+dotenv.config({
+	path: './config.env'
+})
 
-const { GatewayIntentBits, Partials } = require('discord.js');
+const {
+	GatewayIntentBits,
+	Partials
+} = require('discord.js');
 const Discord = require('discord.js');
-const client = new Discord.Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent], partials: [Partials.Channel] });
+const client = new Discord.Client({
+	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+	partials: [Partials.Channel]
+});
 const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
+const {
+	Client,
+	Collection,
+	Intents
+} = require('discord.js');
 const clientid = process.env.BOT_CLIENT_ID
 const token = process.env.BOT_TOKEN
 const system = require('./functions');
@@ -50,7 +61,10 @@ client.on('interactionCreate', async interaction => {
 		await command.execute(interaction);
 	} catch (error) {
 		console.log(error)
-		await interaction.channel.send({ content: 'Tut mir leid! Während ich veruscht habe diesen Command auszuführen ist mir ein Fehler unterlaufen... Probiere es gerne noch einmal.', ephemeral: true });
+		await interaction.channel.send({
+			content: 'Tut mir leid! Während ich veruscht habe diesen Command auszuführen ist mir ein Fehler unterlaufen... Probiere es gerne noch einmal.',
+			ephemeral: true
+		});
 	}
 });
 
@@ -58,7 +72,7 @@ client.on('interactionCreate', async interaction => {
 //Startup Log
 
 client.on('ready', () => {
-    console.log('Hallo! Ich wurde erfolgreich eingeloggt als folgender Client: ' + client.user.tag + '!');
+	console.log('Hallo! Ich wurde erfolgreich eingeloggt als folgender Client: ' + client.user.tag + '!');
 });
 
 
