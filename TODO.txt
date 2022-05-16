@@ -1,6 +1,6 @@
 - Server - Manager ~ Priorität: 3
 - Server - Laufzeit ~ Priorität: 3
-- Booster - Rewards ~ Priorität: 1 
+- Booster - Rewards ~ Priorität: 1 -- DONE
 - Booster - Shop ~ Priorität: 2
 - Minigames - Mehr Games ~ Priorität: 3
 - Events - Automatische Coin Events ~ Priorität: 4
