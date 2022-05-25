@@ -1,8 +1,11 @@
-- Server - Manager ~ Priorität: 3
+- Server - Manager ~ Priorität: 3 -- DONE
 - Server - Laufzeit ~ Priorität: 3
 - Booster - Rewards ~ Priorität: 1 -- DONE
 - Booster - Shop ~ Priorität: 2
 - Minigames - Mehr Games ~ Priorität: 3
 - Events - Automatische Coin Events ~ Priorität: 4
+- Server - Multiple Nodes ~Priorität: 1 -- DONE
 - Shop - Erweitern um: Bungeecord, Webserver ~ Priorität: 1 -- DONE
-- Shop - Variable Preiseinstellungen ~ Priorität: 2
+- Shop - Variable Preiseinstellungen ~ Priorität: 2 -- IN ARBEIT
+- Order Custom Bot ( Items ) ~ Priorität 3-- IN ARBEIT
+- Multi-Language ~ Priorität 3
