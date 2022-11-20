@@ -12,7 +12,7 @@ For Questions either open a Github Issue or Message me on Discord ```Einkornwolf
 
 # Website
 
-https://wolflink.de/pdm
+https://pdm.einkornwolf.de
 
 # Copyright
 
