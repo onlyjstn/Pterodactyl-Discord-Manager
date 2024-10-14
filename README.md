@@ -1,6 +1,6 @@
 
 <h1>THIS REPOSITORY IS UNMAINTAINED</h1>
-<h1>THE LATEST FILES ARE AVAILABLE AS A DOWNLOAD -> [https://github.com/Einkornwolf/Pterodactyl-Discord-Manager/blob/e4677c534071cedace0d0ba29b927ca68c94d0cd/betterPDM.zip][betterPDM.zip]</h1>
+<h1>THE LATEST FILES ARE AVAILABLE AS A DOWNLOAD -> [betterPDM.zip](https://github.com/user-attachments/files/17369914/betterPDM.zip)</h1>
 
 # What does this Bot do?
 This Bot is used to interact with the Pterodactyl Panel API and let the Users create and manage Servers and Accounts on their own. It also includes a Currency System with a Server-Shop, a Minigame System in order to earn Coins, a Server Manager, a Server Runtime System, a Shop Manager for Admins, a Coin-Leaderboard, Voice Channels to earn Coins in. Furthermore the Bot currently supports 3 languages ( german, english, french ) which the user can select via a /language command.
