@@ -11,7 +11,12 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, client) {
-    if (!["USERIDOFADMINHERE"].includes(message.author.id)) return;
+    switch (process.env.ADMIN_LIST && process.env.ADMIN_LIST.includes(message.author.id)) {
+      case false:
+        return;
+      case true:
+        break;
+    }
     let { content } = message, evalData = content.slice(11), timeBefore = performance.now();
 
     try {

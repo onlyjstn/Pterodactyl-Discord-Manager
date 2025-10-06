@@ -11,7 +11,13 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, client) {
-    if (message.author.id != "USERIDOFADMINHERE") return;
+    switch (process.env.ADMIN_LIST && process.env.ADMIN_LIST.includes(message.author.id)) {
+      case false:
+        return;
+      case true:
+        break;
+    }
+
     let { content } = message, subCommand = content.split("? ")[1], timeBefore = performance.now()
 
     //Reload

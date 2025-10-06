@@ -18,10 +18,12 @@ module.exports = {
    * @param {Client} client
    */
   async execute(message, client) {
-    if (
-      !["USERIDOFADMINHERE"].includes(message.author.id)
-    )
-      return;
+    switch (process.env.ADMIN_LIST && process.env.ADMIN_LIST.includes(message.author.id)) {
+      case false:
+        return;
+      case true:
+        break;
+    }
     let { content } = message,
       banData = content.slice(10),
       timeBefore = performance.now();
@@ -34,14 +36,18 @@ module.exports = {
       member = mention
     } else {
       try {
-    member = await client.users.fetch(banData).member
+
+        const user = await client.users.fetch(banData)
+        member = message.guild ? await message.guild.members.fetch(user.id).catch(() => null) : null
+        if(!member) member = user
       } catch(error) {
         message.channel.send("Error banning user: " + error)
         console.error("Error banning user: " + error);
         return
       }
     }
-    member
+
+    (member)
       .ban({ reason: "Banned by Ptero-Manager" })
       .then(() => {
         message.channel.send("User Banned 💀")
