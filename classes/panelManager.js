@@ -23,6 +23,26 @@ class PanelManager {
   constructor(link, apiKey, accountKey) {
     this.axios = new Axios(axiosInstance, link, apiKey, accountKey);
 
+    // Generic retry wrapper for panel requests (handles transient 504)
+    this._withRetries = async function (fn, maxAttempts = 3) {
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          return await fn();
+        } catch (e) {
+          const statusCode = e && e.response && e.response.status;
+          console.warn(`Panel request attempt ${attempt} failed with ${e && e.message} (status: ${statusCode})`);
+          // Log stack for debugging undefined property errors
+          if (e && e.stack) console.warn(e.stack);
+          if ((statusCode === 504 || statusCode === 502 || statusCode === 503) && attempt < maxAttempts) {
+            // backoff
+            await new Promise((r) => setTimeout(r, attempt * 1000));
+            continue;
+          }
+          throw e;
+        }
+      }
+    };
+
     //Check if User has an Account
     this.checkAccount = async function (eMail) {
       this.userData;
@@ -134,32 +154,37 @@ class PanelManager {
 
     //Create Server
     this.createServer = async function (eMail, serverName, eggId, memoryAmount, swapAmount, diskAmount, ioValue, cpuPercentage, databaseAmount, backupAmount) {
-      //Get User Data
-      this.userData = await this.checkAccount(eMail)
-      //Get Node Data
-      this.nodeData = await this.getPanelNodes();
-      //Get Amount of Servers on each Node
-      this.nodeServerAmount = this.nodeData.map(node => node.attributes.relationships.servers.data.length)
-      //Get Node with least amount of Servers
-      this.lowestNode =
-        this.nodeData[
-        this.nodeServerAmount.indexOf(Math.min(...this.nodeServerAmount))
-        ];
-      //Get Allocations on Node
-      this.allocations = await this.getAllocations(this.lowestNode.attributes.id);
+      // Get User Data (with retries)
+      this.userData = await this._withRetries(() => this.checkAccount(eMail));
+      if (!this.userData) throw new Error(`Panel createServer: user not found for email=${eMail}`);
+      // Get Node Data
+      this.nodeData = await this._withRetries(() => this.getPanelNodes());
+      if (!this.nodeData || !Array.isArray(this.nodeData) || this.nodeData.length === 0) throw new Error(`Panel createServer: no node data returned from panel`);
+      // Get Amount of Servers on each Node
+      this.nodeServerAmount = this.nodeData.map(node => node.attributes.relationships.servers.data.length);
+      // Get Node with least amount of Servers
+      this.lowestNode = this.nodeData[this.nodeServerAmount.indexOf(Math.min(...this.nodeServerAmount))];
+      if (!this.lowestNode) throw new Error(`Panel createServer: could not determine lowestNode from nodeData`);
+      // Get Allocations on Node
+      this.allocations = await this._withRetries(() => this.getAllocations(this.lowestNode.attributes.id));
+      if (!this.allocations || !Array.isArray(this.allocations)) throw new Error(`Panel createServer: no allocations returned for node ${this.lowestNode && this.lowestNode.attributes && this.lowestNode.attributes.id}`);
       //Get Free Allocations
       this.freeAllocations = this.allocations.filter(allocation => allocation.attributes.assigned == false)
       this.freeAllocationIds = this.freeAllocations.map(allocation => allocation.attributes.id)
+      if (!this.freeAllocationIds || this.freeAllocationIds.length === 0) throw new Error(`Panel createServer: no free allocations available on node ${this.lowestNode && this.lowestNode.attributes && this.lowestNode.attributes.id}`);
       //Get Nests
       this.nestData = await this.getNestData();
       //Get chosen Egg Data
       this.chosenNestData = this.nestData.find(nest => nest.attributes.relationships.eggs.data.some(egg => egg.attributes.id == eggId))
+      if (!this.chosenNestData) throw new Error(`Panel createServer: chosenNestData not found for eggId=${eggId}`);
       this.chosenEggData = this.chosenNestData.attributes.relationships.eggs.data.find(egg => egg.attributes.id == eggId)
+      if (!this.chosenEggData) throw new Error(`Panel createServer: chosenEggData not found for eggId=${eggId}`);
       //Retreive Egg Enviroment Variables
-      this.complexEggData = await this.getEggData(
+      this.complexEggData = await this._withRetries(() => this.getEggData(
         eggId,
         this.chosenEggData.attributes.nest
-      );
+      ));
+      if (!this.complexEggData) throw new Error(`Panel createServer: complexEggData missing for eggId=${eggId}`);
       this.enviromentVariables =
         this.complexEggData.attributes.relationships.variables.data;
       this.populatedEnviromentVariables = new Object();
@@ -170,8 +195,8 @@ class PanelManager {
             variable.attributes.env_variable
           ] = variable.attributes.default_value;
       }
-      //Create Server
-      return await this.axios.post(
+      //Create Server (with retries)
+      return await this._withRetries(() => this.axios.post(
         `/api/application/servers`,
         {
           name: serverName,
@@ -196,7 +221,7 @@ class PanelManager {
           },
         },
         "application"
-      );
+      ));
     };
 
     //Delete Server

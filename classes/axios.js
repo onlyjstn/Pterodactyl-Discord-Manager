@@ -1,5 +1,7 @@
 const { AxiosDataGenerator } = require("./axiosDataGenerator");
 const axiosParam = require("axios");
+const http = require("http");
+const https = require("https");
 
 class Axios {
   /**
@@ -24,13 +26,21 @@ class Axios {
         case `application`:
           return await axiosInstance.get(
             `${baseLink}${linkExtension}`,
-            this.applicationConfig
+            Object.assign({}, this.applicationConfig, {
+              timeout: this.applicationConfig.timeout || 15000,
+              httpAgent: new http.Agent({ keepAlive: true }),
+              httpsAgent: new https.Agent({ keepAlive: true }),
+            })
           );
           break;
         case `client`: {
           return await axiosInstance.get(
             `${baseLink}${linkExtension}`,
-            this.clientConfig
+            Object.assign({}, this.clientConfig, {
+              timeout: this.clientConfig.timeout || 15000,
+              httpAgent: new http.Agent({ keepAlive: true }),
+              httpsAgent: new https.Agent({ keepAlive: true }),
+            })
           );
           break;
         }
@@ -45,14 +55,22 @@ class Axios {
         case `application`:
           return await axiosInstance.post(
             `${baseLink}${linkExtension}`,
-            JSON.stringify(data),
-            this.applicationConfig
+            data,
+            Object.assign({}, this.applicationConfig, {
+              timeout: this.applicationConfig.timeout || 15000,
+              httpAgent: new http.Agent({ keepAlive: true }),
+              httpsAgent: new https.Agent({ keepAlive: true }),
+            })
           );
         case `client`: {
           return await axiosInstance.post(
             `${baseLink}${linkExtension}`,
             data,
-            this.clientConfig
+            Object.assign({}, this.clientConfig, {
+              timeout: this.clientConfig.timeout || 15000,
+              httpAgent: new http.Agent({ keepAlive: true }),
+              httpsAgent: new https.Agent({ keepAlive: true }),
+            })
           );
         }
         default:
@@ -66,12 +84,20 @@ class Axios {
         case `application`:
           return await axiosInstance.delete(
             `${baseLink}${linkExtension}`,
-            this.applicationConfig
+            Object.assign({}, this.applicationConfig, {
+              timeout: this.applicationConfig.timeout || 15000,
+              httpAgent: new http.Agent({ keepAlive: true }),
+              httpsAgent: new https.Agent({ keepAlive: true }),
+            })
           );
         case `client`: {
           return await axiosInstance.delete(
             `${baseLink}${linkExtension}`,
-            this.clientConfig
+            Object.assign({}, this.clientConfig, {
+              timeout: this.clientConfig.timeout || 15000,
+              httpAgent: new http.Agent({ keepAlive: true }),
+              httpsAgent: new https.Agent({ keepAlive: true }),
+            })
           );
         }
         default:
@@ -86,13 +112,21 @@ class Axios {
           return await axiosInstance.patch(
             `${baseLink}${linkExtension}`,
             data,
-            this.applicationConfig
+            Object.assign({}, this.applicationConfig, {
+              timeout: this.applicationConfig.timeout || 15000,
+              httpAgent: new http.Agent({ keepAlive: true }),
+              httpsAgent: new https.Agent({ keepAlive: true }),
+            })
           );
         case `client`: {
           return await axiosInstance.patch(
             `${baseLink}${linkExtension}`,
             data,
-            this.clientConfig
+            Object.assign({}, this.clientConfig, {
+              timeout: this.clientConfig.timeout || 15000,
+              httpAgent: new http.Agent({ keepAlive: true }),
+              httpsAgent: new https.Agent({ keepAlive: true }),
+            })
           );
         }
         default:

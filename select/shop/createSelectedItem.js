@@ -24,8 +24,77 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    let { user: { id:userId, tag }, values:itemId, user } = interaction, shopItems = await databaseInterface.getObject("shop_items_servers"), userBalance = await economyManager.getUserBalance(userId), item = shopItems[itemId], { data: { price, name, egg_id, server_ram, server_swap, server_disk, server_cpu, server_databases, server_backups, runtime } } = item , userData = await databaseInterface.getObject(userId)
-    let fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, { e_mail } = userData
+    // Normalize input values and load shop data
+    const { user: { id: userId, tag }, values, user } = interaction;
+    const shopItems = await databaseInterface.getObject("shop_items_servers");
+    // values is an array from StringSelectMenu; take first selected value
+    const selectedValue = Array.isArray(values) ? values[0] : values;
+    const itemIndex = parseInt(selectedValue, 10);
+    if (!shopItems || !Array.isArray(shopItems) || shopItems.length === 0) {
+      await interaction.deferReply({ ephemeral: true });
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
+            .setDescription(`\`\`\`${await t("shop_select.no_shop_items") || "Shop is empty."}\`\`\``)
+            .setColor(0xe6b04d),
+        ],
+        ephemeral: true,
+      });
+      await logManager.logString(`${tag} tried to buy but shop_items_servers is empty or missing.`);
+      return;
+    }
+    if (isNaN(itemIndex) || itemIndex < 0 || itemIndex >= shopItems.length) {
+      await interaction.deferReply({ ephemeral: true });
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
+            .setDescription(`\`\`\`${await t("shop_select.invalid_selection") || "Invalid shop selection."}\`\`\``)
+            .setColor(0xe6b04d),
+        ],
+        ephemeral: true,
+      });
+      await logManager.logString(`${tag} made an invalid shop selection: ${selectedValue}`);
+      return;
+    }
+
+    const userBalance = await economyManager.getUserBalance(userId);
+    const item = shopItems[itemIndex];
+    if (!item || !item.data) {
+      await interaction.deferReply({ ephemeral: true });
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
+            .setDescription(`\`\`\`${await t("shop_select.configuration") || "Selected shop item is not configured correctly."}\`\`\``)
+            .setColor(0xe6b04d),
+        ],
+        ephemeral: true,
+      });
+      await logManager.logString(`${tag} selected malformed shop item at index ${itemIndex}`);
+      return;
+    }
+
+    const { data: { price, name, egg_id, server_ram, server_swap, server_disk, server_cpu, server_databases, server_backups, runtime } } = item;
+    const userData = await databaseInterface.getObject(userId);
+    const fetchedUser = await user.fetch(true);
+    const { accentColor } = fetchedUser;
+    const { e_mail } = userData || {};
+    if (!e_mail) {
+      await interaction.deferReply({ ephemeral: true });
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
+            .setDescription(`\`\`\`${await t("shop.no_account_text") || "No account/email associated with your user."}\`\`\``)
+            .setColor(accentColor ? accentColor : 0xe6b04d),
+        ],
+        ephemeral: true,
+      });
+      await logManager.logString(`${tag} tried to buy but no email (panel account) registered.`);
+      return;
+    }
     await interaction.deferReply({ ephemeral: true })
 
     //Check if item is configured correctly
@@ -64,8 +133,64 @@ module.exports = {
       return;
     }
 
-    let server = await panel.createServer(e_mail, `${name} ${userId}`, egg_id, server_ram, server_swap, server_disk, 500, server_cpu, server_databases, server_backups), { status, data: { attributes: { uuid } } } = server
-    //Error with Server Creation
+    // Create server with retries on 504 Gateway Timeout
+    let server;
+    const maxAttempts = 3;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        server = await panel.createServer(
+          e_mail,
+          `${name} ${userId}`,
+          egg_id,
+          server_ram,
+          server_swap,
+          server_disk,
+          500,
+          server_cpu,
+          server_databases,
+          server_backups
+        );
+        break;
+      } catch (e) {
+        // If it's a 504, retry a couple of times with backoff
+        const statusCode = e && e.response && e.response.status;
+        await logManager.logString(`${tag} server creation attempt ${attempt} failed with ${e.message} (status: ${statusCode})`);
+        if (statusCode == 504 && attempt < maxAttempts) {
+          // wait with exponential/backoff (attempt * 1000ms)
+          await new Promise((r) => setTimeout(r, attempt * 1000));
+          continue;
+        }
+        // Non-retriable or max attempts reached: inform user and log
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
+              .setDescription(`\`\`\`${await t("shop_select.server_not_created_text")}\`\`\``)
+              .setColor(accentColor ? accentColor : 0xe6b04d),
+          ],
+          ephemeral: true,
+        });
+        await logManager.logString(`${tag}'s shop item / server creation caused an error: ${e.stack || e.message}`);
+        return;
+      }
+    }
+
+    if (!server) {
+      await interaction.editReply({
+        embeds: [
+          new EmbedBuilder()
+            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
+            .setDescription(`\`\`\`${await t("shop_select.server_not_created_text")}\`\`\``)
+            .setColor(accentColor ? accentColor : 0xe6b04d),
+        ],
+        ephemeral: true,
+      });
+      await logManager.logString(`${tag}'s shop item / server creation failed without response.`);
+      return;
+    }
+
+    let { status, data: { attributes: { uuid } } } = server
+    // Error with Server Creation
     if (status != 201 && status != 200) {
       await interaction.editReply({
         embeds: [
