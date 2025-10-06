@@ -1,3 +1,5 @@
 node_modules
-.env
-config.json
+.VSCodeCounter
+database/json.sqlite
+log/log.txt
+config.env
