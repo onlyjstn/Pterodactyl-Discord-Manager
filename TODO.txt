@@ -9,4 +9,4 @@
 - Shop - Variable Preiseinstellungen ~ Priorität: 2 -- IN ARBEIT
 - Order Custom Bot ( Items ) ~ Priorität 3-- IN ARBEIT
 - Multi-Language ~ Priorität 3 -- DONE
-- Einkornwolf ist cool
+- Einkornwolf ist cool.
