@@ -25,7 +25,11 @@ module.exports = {
    * @param {TranslationManager} t
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply(), { user: { accentColor, id, tag }, channel } = interaction, userBalance = await economyManager.getUserBalance(id), userDaily = await economyManager.getUserDaily(id)
+  // Defer reply as ephemeral so follow ups are hidden
+  await interaction.deferReply({ ephemeral: true });
+  const { user: { accentColor, id, tag }, channel } = interaction;
+  const userBalance = await economyManager.getUserBalance(id);
+  const userDaily = await economyManager.getUserDaily(id);
     //Einsatz Embeds und Select
 
     const einsatzEmbed = new EmbedBuilder()
@@ -41,8 +45,7 @@ module.exports = {
 
 
     await interaction.editReply({
-      embeds: [einsatzEmbed],
-      ephemeral: true
+      embeds: [einsatzEmbed]
     });
 
     //Get Messages and Filter for the Users bet
@@ -61,10 +64,9 @@ module.exports = {
         await collected.delete();
       } catch { }
       //Check if the set User Amount is let than 0
-      if (Number.isFinite(einsatz) == false || einsatz <= 0 || einsatz > 150) {
+        if (Number.isFinite(einsatz) == false || einsatz <= 0 || einsatz > 150) {
         await interaction.editReply({
-          embeds: [einsatzNoNumber],
-          ephemeral: true
+          embeds: [einsatzNoNumber]
         });
         //Logging
         await logManager.logString(`${tag} tried to play a minigame with insufficient coins / remaining daily limit.`)
@@ -72,10 +74,9 @@ module.exports = {
       }
 
       //Check if user has enough coins, reached his daily limit, or would reach his daily limit
-      if (einsatz * 1.5 > userBalance || userDaily >= 300 || (300 - userDaily) < (einsatz * 1.5)) {
+        if (einsatz * 1.5 > userBalance || userDaily >= 300 || (300 - userDaily) < (einsatz * 1.5)) {
         await interaction.editReply({
-          embeds: [einsatzNoNumber],
-          ephemeral: true
+          embeds: [einsatzNoNumber]
         });
         //Logging
         await logManager.logString(`${tag} tried to play a minigame with insufficient coins / remaining daily limit.`)
@@ -183,9 +184,10 @@ module.exports = {
                 .setDescription(`\`\`\`${await t("minigames_events.blackjack_error_text")}\`\`\``)
                 .setColor(accentColor ? accentColor : 0xe6b04d)
             ],
+            ephemeral: true
           });
           //Logging
-          await logManager.logString(`${tag}'s Blackjack Game resulted in an error.`)
+          await logManager.logString(`${tag}'s Blackjack Game resulted in an error: ${res}`)
           return;
         });
     });
