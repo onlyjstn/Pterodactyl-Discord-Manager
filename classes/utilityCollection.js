@@ -1,7 +1,5 @@
 let { generate } = require("generate-password");
 const { glob } = require("glob");
-const { promisify } = require("util");
-const proGlob = promisify(glob)
 
 
 class UtilityCollection {
@@ -36,7 +34,7 @@ class UtilityCollection {
 
         //Load Javascript Files and delete their require Cache
         this.loadFiles = async function (directoryName) {
-            this.files = await proGlob(`${process.cwd().replace(/\\/g, "/")}/${directoryName}/**/*.js`)
+            this.files = await glob(`${process.cwd().replace(/\\/g, "/")}/${directoryName}/**/*.js`)
             this.files.forEach((file) => delete require.cache[require.resolve(file)])
             return this.files
         }

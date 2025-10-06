@@ -12,7 +12,7 @@ const database = new DataBaseInterface()
 const panel = new PanelManager(process.env.PTERODACTYL_API_URL, process.env.PTERODACTYL_API_KEY, process.env.PTERODACTYL_ACCOUNT_API_KEY)
 
 module.exports = {
-  name: "ready",
+  name: "clientReady",
   once: false,
   /**
    *

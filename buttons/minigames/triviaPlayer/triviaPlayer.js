@@ -9,7 +9,6 @@ const { DataBaseInterface } = require("../../../classes/dataBaseInterface")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, ComponentType } = require("discord.js")
 const { UtilityCollection } = require("../../../classes/utilityCollection");
 const { request } = require("undici");
-const { validateURL } = require("ytdl-core");
 
 
 module.exports = {
