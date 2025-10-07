@@ -289,5 +289,7 @@
 	"minigames.help_contact": "Kontaktiere einen Admin, falls das Problem weiterhin besteht",
 	"minigames.your_hand": "Deine Hand",
 	"minigames.dealer_shown": "Dealer",
-	"minigames.bet_label_short": "Einsatz"
+	"minigames.bet_label_short": "Einsatz",
+	"counting.counting_channel": "Setze Channel",
+	"counting.counting_channel_set": "Channel für das Counting-System gesetzt auf:"
 }

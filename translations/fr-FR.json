@@ -289,5 +289,7 @@
 	"minigames.help_contact": "Contacte un admin si cela persiste",
 	"minigames.your_hand": "Ta main",
 	"minigames.dealer_shown": "Croupier",
-	"minigames.bet_label_short": "Mise"
+	"minigames.bet_label_short": "Mise",
+	"counting.counting_channel": "Définir le salon",
+	"counting.counting_channel_set": "Salon pour le système de comptage défini sur :"
 }

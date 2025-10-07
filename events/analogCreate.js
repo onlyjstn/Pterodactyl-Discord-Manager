@@ -19,6 +19,9 @@ module.exports = {
     let analogCommand = client.analogCommands.get("currencyGiver");
     await analogCommand.execute(message, client, database, economyManager);
 
+    analogCommand = client.analogCommands.get("countingGame");
+    await analogCommand.execute(message, client, database, economyManager);
+
     //RELOAD COMMAND
     if (message.content.includes("pdm reload")) {
       let analogCommand = client.analogCommands.get("reload");

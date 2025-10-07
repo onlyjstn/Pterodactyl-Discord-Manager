@@ -290,5 +290,7 @@
 	"minigames.help_contact": "Contact an admin if this persists",
 	"minigames.your_hand": "Your Hand",
 	"minigames.dealer_shown": "Dealer",
-	"minigames.bet_label_short": "Bet"
+	"minigames.bet_label_short": "Bet",
+	"counting.counting_channel": "Set Channel",
+	"counting.counting_channel_set": "Channel for the counting system set to:"
 }
