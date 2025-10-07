@@ -148,7 +148,7 @@
 	"language_event.main_label": "Langue",
 	"minigames.blackjack_label": "Blackjack !",
 	"minigames.main_label": "Mini-jeux",
-	"minigames.main_text": "Qu'est-ce que je peux faire ici?\n\nJoue ici pour gagner tes coins ! Qu'est-ce que tu as envie de faire aujourd'hui?\nClique sur le bouton correspondant pour commencer le jeu!\n```\n```🔢 Deviner des chiffres!\n➥ Devine le bon chiffre - tu dois choisir entre 1, ..., 5.\n``````🤴 Blackjack!\n➥ Joue une partie de blackjack dès aujourd'hui!```\n```⠀⠀⠀⠀⠀⠀⠀⠀⠀⛔ Attention Attention - risque de dépendance ! ⛔",
+	"minigames.main_text": "Que pouvez-vous faire ici ?\n\n\nJouez pour gagner des pièces ! Qu'avez-vous envie de faire aujourd'hui ?\nCliquez sur le bouton correspondant pour commencer le jeu !\n```\n```🔢 Devine le chiffre !\n➥ Essaie de deviner le bon chiffre – choisis entre 1 et 5.\n``````🤴 Blackjack !\n➥ Joue une partie de Blackjack dès aujourd'hui !\n``````⁉️ Quiz de culture générale !\n➥ Réponds correctement à la question.\n``````⠀⠀⠀⠀⠀⠀⠀⠀⛔ Attention – Risque de dépendance ! ⛔",
 	"minigames.no_account_label": "Pas de compte",
 	"minigames.no_account_text": "Tu ne peux pas jouer aux mini-jeux car tu n'as pas de compte.",
 	"minigames.zahlen_label": "Devinez le nombre",
@@ -285,8 +285,7 @@
 	"minigames.double": "Double",
 	"minigames.split": "Split",
 	"minigames.cancel": "Annuler",
-	"minigames.help_contact": "Contacte un admin si cela persiste"
-	,
+	"minigames.help_contact": "Contacte un admin si cela persiste",
 	"minigames.your_hand": "Ta main",
 	"minigames.dealer_shown": "Croupier",
 	"minigames.bet_label_short": "Mise"

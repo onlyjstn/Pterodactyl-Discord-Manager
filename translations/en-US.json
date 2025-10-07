@@ -149,7 +149,7 @@
 	"language_event.main_label": "Language",
 	"minigames.blackjack_label": "Blackjack!",
 	"minigames.main_label": "Minigames",
-	"minigames.main_text": "What can I do here?\n\nPlay here for your coins! What are you in the mood for today?\nClick on the respective button to start the game!\n```\n```🔢 Guess numbers!\n➥ Guess the right number - you have to choose between 1, ..., 5.\n``````🤴 Blackjack!\n➥ Play a round of Blackjack today!```\n```⠀⠀⠀⠀⠀⠀⠀⠀⠀⛔ Caution - danger of addiction! ⛔",
+	"minigames.main_text": "What can you do here?\n\n\nPlay games to win coins! What are you in the mood for today?\nClick the respective button to start the game!\n```\n```🔢 Guess the Number!\n➥ Try to guess the correct number – choose between 1 and 5.\n``````🤴 Blackjack!\n➥ Play a round of Blackjack today!\n``````⁉️ Trivia Quiz!\n➥ Answer the question correctly.\n``````⠀⠀⠀⠀⠀⠀⠀⠀⛔ Warning – Highly Addictive! ⛔",
 	"minigames.no_account_label": "No account",
 	"minigames.no_account_text": "You can't play minigames because you don't have an account.",
 	"minigames.zahlen_label": "Guess the Number",
@@ -286,8 +286,7 @@
 	"minigames.double": "Double",
 	"minigames.split": "Split",
 	"minigames.cancel": "Cancel",
-	"minigames.help_contact": "Contact an admin if this persists"
-	,
+	"minigames.help_contact": "Contact an admin if this persists",
 	"minigames.your_hand": "Your Hand",
 	"minigames.dealer_shown": "Dealer",
 	"minigames.bet_label_short": "Bet"
