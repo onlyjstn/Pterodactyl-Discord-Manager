@@ -284,6 +284,7 @@
 	"minigames.hit": "Hit",
 	"minigames.stand": "Stand",
 	"minigames.double": "Double",
+	"minigames.split_not_allowed": "You cannot split",
 	"minigames.split": "Split",
 	"minigames.cancel": "Cancel",
 	"minigames.help_contact": "Contact an admin if this persists",

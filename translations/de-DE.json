@@ -283,6 +283,7 @@
 	"minigames.hit": "Hit",
 	"minigames.stand": "Stand",
 	"minigames.double": "Double",
+	"minigames.split_not_allowed": "Du kannst nicht splitten",
 	"minigames.split": "Split",
 	"minigames.cancel": "Abbrechen",
 	"minigames.help_contact": "Kontaktiere einen Admin, falls das Problem weiterhin besteht",
