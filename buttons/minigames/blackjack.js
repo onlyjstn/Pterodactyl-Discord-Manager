@@ -94,8 +94,9 @@ module.exports = {
         // determine multipliers (array) and outcomes (array)
         const multipliersArr = multipliers.length ? multipliers : outcomes.map(() => 1)
 
-        // charge extra stakes for splits/doubles (we already removed base bet)
-        const extraCharges = (multipliersArr.length - 1) * einsatz + multipliersArr.reduce((acc, m) => acc + (m - 1) * einsatz, 0)
+  // charge extra stakes for splits/doubles (we already removed base bet)
+  // multipliersArr contains 1 or 2 per hand; if a hand was doubled we need to charge an extra base bet for it
+  const extraCharges = multipliersArr.reduce((acc, m) => acc + (m - 1) * einsatz, 0) + Math.max(0, multipliersArr.length - 1) * 0 // splits already accounted by separate hands, base bet removed once
         if (extraCharges > 0) await economyManager.removeCoins(id, extraCharges)
 
         // compute payouts
@@ -107,8 +108,17 @@ module.exports = {
           totalStake += stake
           const out = outcomes[i] || 'LOSE'
           if (out === 'WIN') {
-            // when stakes were removed up-front, add back stake*2 to return stake + profit
-            totalPayout += stake * 2
+            // check for natural blackjack payout (3:2)
+            const isNatural = (res.naturals && res.naturals[i])
+            const dealerNatural = res.dealerNatural
+            if (isNatural && !dealerNatural) {
+              // player gets 3:2 on top of their stake
+              // return stake + 1.5 * stake as profit => stake * 2.5 total
+              totalPayout += Math.floor(stake * 2.5)
+            } else {
+              // standard win: return stake + equal profit => stake*2
+              totalPayout += stake * 2
+            }
           } else if (out === 'PUSH') {
             // return stake
             totalPayout += stake
