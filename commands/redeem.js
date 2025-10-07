@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 // Redeem Command
 module.exports = {
@@ -31,7 +31,7 @@ module.exports = {
      * @returns 
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager) {
-        await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
         let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         let userData = await databaseInterface.getObject(userId), utility = new UtilityCollection(), code = interaction.options.getString("code")
 
@@ -44,7 +44,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("coins.no_account_text")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             })
             await logManager.logString(`${tag} tried to use /redeem without an Account`)
             return
@@ -60,7 +60,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("giftcode_manager.non_existing_code")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             })
             await logManager.logString(`${tag} tried to use the not existing code ${code}`)
             return
@@ -74,7 +74,7 @@ module.exports = {
             await logManager.logString(`Code ${code} has been redeemed by ${user.tag} for ${codeList[index].value} Coins.`)
             await giftCodeManager.deleteGiftCode(code)
             await interaction.editReply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 embeds: [
                     new EmbedBuilder()
                         .setTitle(`\`\`\`✅ ${await t("giftcode_manager.success_label")} ✅\`\`\``)
@@ -94,7 +94,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("giftcode_manager.already_used_code")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             })
             return
         }
@@ -103,7 +103,7 @@ module.exports = {
         await logManager.logString(`Code ${code} has been redeemed by ${user.tag} for ${codeList[index].value} Coins.`)
         await giftCodeManager.addUsed(userId, code)
         await interaction.editReply({
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             embeds: [
                 new EmbedBuilder()
                     .setTitle(`\`\`\`✅ ${await t("giftcode_manager.success_label")} ✅\`\`\``)

@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 const dotenv = require("dotenv");
 dotenv.config({
   path: "../config.env",
@@ -37,20 +37,20 @@ module.exports = {
    * @returns 
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: iUser } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser
     //Check if User is on the Admin List
     if (!process.env.ADMIN_LIST.includes(userId)) {
       //Reply that the User is no Admin
       await interaction.editReply({
         embeds: [
-          new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.no_admin_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
-            .setColor(accentColor ? accentColor : 0xe6b04d)
+            new EmbedBuilder()
+              .setTitle(`\`\`\`⛔ ${await t("errors.no_admin_label")} ⛔\`\`\``)
+              .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
+              .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
-      });
+        flags: MessageFlags.Ephemeral,
+        });
       //Logging
       await logManager.logString(`${tag} tried to use /switch_mails without admin permissions`)
       return;
@@ -67,7 +67,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("switch_mail.no_account_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
       //Logging
       await logManager.logString(`${tag} tried to change the Database E-Mail from a User who does not have an Account`)
@@ -86,7 +86,7 @@ module.exports = {
         .setDescription(`\`\`\`${await t("switch_mail.main_text")}\`\`\``)
         .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     //Logging
       await logManager.logString(`${tag} changed the Mail of ${user.tag} to "${newMail}"`)

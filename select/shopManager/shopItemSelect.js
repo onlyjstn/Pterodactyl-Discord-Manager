@@ -6,7 +6,7 @@ const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
 const { UtilityCollection } = require("../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "selectShopItem",
@@ -39,7 +39,7 @@ module.exports = {
     //Show shop item info
     //Check if shop item still exists
     if (!shopItems[values] || !shopItems[values].data) {
-      await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -47,12 +47,12 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_manager_select.item_not_found_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       })
       return;
     }
 
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
     //Get Data about the shop item
     let nestData = await panel.getNestData(), selectedItem = shopItems[values].data, { name, description, price, server_databases, server_cpu, server_ram, server_disk, server_swap, server_backups, egg_id } = selectedItem
@@ -85,7 +85,7 @@ module.exports = {
           .setCustomId("deleteShopItem")
           .setStyle("Danger")
       )],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     })
   }
 }

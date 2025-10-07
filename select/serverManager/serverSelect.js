@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 const dotenv = require("dotenv");
 dotenv.config({
   path: "./config.env",
@@ -31,7 +31,7 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { values:serverIndex , user: { tag, id }, user } = interaction, userData = await databaseInterface.getObject(id), { e_mail } = userData, userServers = await panel.getAllServers(e_mail), selectedServer = userServers[serverIndex], fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
 
     //Check if Server still exists
@@ -42,8 +42,8 @@ module.exports = {
           .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
           .setDescription(`\`\`\`${await t("server_manager_events.server_not_found_text")}\`\`\``)
           .setColor(accentColor ? accentColor : 0xe6b04d)
-        ],
-        ephemeral: true
+    ],
+    flags: MessageFlags.Ephemeral
       })
       return;
     }
@@ -60,8 +60,8 @@ module.exports = {
           .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
           .setDescription(`\`\`\`${await t("server_manager_events.server_not_found_text")}\`\`\``)
           .setColor(accentColor ? accentColor : 0xe6b04d)
-        ],
-        ephemeral: true
+    ],
+    flags: MessageFlags.Ephemeral
       })
       return;
     }
@@ -137,7 +137,7 @@ module.exports = {
     await interaction.editReply({
       embeds: [serverInfoEmbed],
       components: [serverCommandButtonsRowOne, serverCommandButtonsRowTwo],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     })
 
     await logManager.logString(`${tag} requested information of his Server with the identifier ${selectedServer.attributes.uuid}`)

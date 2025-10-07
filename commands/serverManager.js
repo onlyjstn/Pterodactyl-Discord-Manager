@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 const dotenv = require("dotenv");
 dotenv.config({
   path: "./config.env",
@@ -31,7 +31,7 @@ module.exports = {
    * @returns 
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     //Check if User has an Account
     let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(userId);
     if (userData == null) {
@@ -42,7 +42,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("errors.no_account_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+    flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag} tried to use /server_manager without an Account`)
@@ -61,7 +61,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("server_manager.no_servers_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag} tried to use /server_manager but has no Servers`)
@@ -124,9 +124,9 @@ module.exports = {
             embeds: [selectServerEmbed],
             components: [
               new ActionRowBuilder().addComponents(selectServerMenu),
-              new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("nextServerPage").setLabel(`${await t("server_manager_pagination.next_page")}`).setStyle("Primary"))
-            ],
-            ephemeral: true
+                  new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId("nextServerPage").setLabel(`${await t("server_manager_pagination.next_page")}`).setStyle("Primary"))
+                ],
+                flags: MessageFlags.Ephemeral
           })
           return
         }
@@ -136,7 +136,7 @@ module.exports = {
           components: [
             new ActionRowBuilder().addComponents(selectServerMenu),
           ],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         })
   }
 }

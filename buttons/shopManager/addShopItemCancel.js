@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
     let { user: { id, accentColor, tag } } = interaction
-    await interaction.deferReply({ephemeral: true});
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     //Delete Cache
     await cacheManager.clearCache(id)
     //reply to cancel button
@@ -38,7 +38,7 @@ module.exports = {
           .setDescription(`\`\`\`${await t("add_item_modal_confirm.item_cancelled_text")}\`\`\``)
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
     //Logging
     await logManager.logString(`${interaction.user.tag} cancelled his action to add a shop item.`)

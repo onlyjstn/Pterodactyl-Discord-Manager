@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "addServerItemDataModal",
@@ -25,7 +25,7 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     let { fields, user: { tag, id }, user } = interaction, itemCpu = fields.getTextInputValue("serverCpu"), itemRam = fields.getTextInputValue("serverRam"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     let itemDisk = fields.getTextInputValue("serverDisk"), itemSwap = fields.getTextInputValue("serverSwap"), itemBackups = fields.getTextInputValue("serverBackups")
     let cachedData = await cacheManager.getCachedData(id), { name, price, runtime, description, egg_id: eggId, server_databases: serverDatabases } = cachedData
@@ -55,7 +55,7 @@ module.exports = {
           .setDescription(`╠ **CPU in %:** ${itemCpu}\n╠ **RAM in MB:** ${itemRam}\n╠ **Disk in MB:** ${itemDisk}\n╠ **Swap in MB:** ${itemSwap}\n╚ **Amount of Backups** ${itemBackups}`)
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true,
+  flags: MessageFlags.Ephemeral,
       //Confirm Button
       components: [
         new ActionRowBuilder().addComponents(

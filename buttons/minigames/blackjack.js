@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags  } = require("discord.js")
 const { playGame } = require("../../lib/blackjackEngine")
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
   // Defer reply as ephemeral so follow ups are hidden
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   const { user: { accentColor, id, tag }, channel } = interaction;
   const userBalance = await economyManager.getUserBalance(id);
   const userDaily = await economyManager.getUserDaily(id);
@@ -157,7 +157,7 @@ module.exports = {
                 .setLabel(`🔁 ${await t("minigames.replay_label")}`)
             )
           ],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
         // Logging
         await logManager.logString(`${tag} settled blackjack: stake=${totalStake} payout=${totalPayout} net=${net}`)
@@ -172,7 +172,7 @@ module.exports = {
               .setFooter({ text: `${(await t('minigames.help_contact'))}` })
               .setTimestamp()
           ],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
         // Logging
         await logManager.logString(`${tag}'s Blackjack Game resulted in an error: ${err}`)

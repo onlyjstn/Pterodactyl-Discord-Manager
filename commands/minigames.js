@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -26,7 +26,7 @@ module.exports = {
    * @returns 
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(userId)
     //Check if User has an Account
     if (userData == null) {
@@ -38,7 +38,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("minigames.no_account_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag} tried to use /minigames without an Account`)
@@ -54,7 +54,7 @@ module.exports = {
           .setDescription(`\`\`\`${await t("minigames.main_text")}\`\`\``)
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      components: [
+  components: [
         new ActionRowBuilder()
           .addComponents(
             new ButtonBuilder()
@@ -73,7 +73,7 @@ module.exports = {
               .setCustomId("trivia"),
           )
       ],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

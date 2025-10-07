@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, MessageFlags } = require("discord.js")
 const { UtilityCollection } = require("../../classes/utilityCollection");
 
 
@@ -26,7 +26,7 @@ module.exports = {
      * @param {TranslationManager} t
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-        await interaction.deferReply({ ephemeral: true }), { user: { id: userId, tag }, user: iUser } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral }), { user: { id: userId, tag }, user: iUser } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser
         let utility = new UtilityCollection()
         //Einsatz Embeds und Select
 
@@ -55,7 +55,7 @@ module.exports = {
                     .setStyle("Danger")
                 )
             ],
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
 }

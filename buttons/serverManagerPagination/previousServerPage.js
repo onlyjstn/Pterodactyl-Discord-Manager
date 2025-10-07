@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
    * @param {TranslationManager} t
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     //Get User Language
     //Next / Prev Buttons
     const previousPageButton = new ButtonBuilder()
@@ -109,7 +109,7 @@ module.exports = {
       await interaction.editReply({
         embeds: [serverEmbed],
         components: [serverSelectRow],
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       })
       return
     }
@@ -118,7 +118,7 @@ module.exports = {
     await interaction.editReply({
       embeds: [serverEmbed],
       components: [serverSelectRow, buttonRow],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     })
   },
 };

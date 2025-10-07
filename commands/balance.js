@@ -9,7 +9,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -33,7 +33,7 @@ module.exports = {
    * @returns 
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     let userData = await databaseInterface.getObject(userId), utility = new UtilityCollection(), foreignUser = interaction.options.getUser("user")
 
@@ -51,7 +51,7 @@ module.exports = {
                 .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
                 .setColor(accentColor ? accentColor : 0xe6b04d)
             ],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
           //Logging
           await logManager.logString(`${tag} tried to view the balance of User ${foreignUser.tag} without admin permissions`)
@@ -69,7 +69,7 @@ module.exports = {
                     .setDescription(`\`\`\`${await t("coins.no_account_send_text")}\`\`\``)
                     .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
               });
               await logManager.logString(`${tag} tried to view the balance of a User who does not have an Account`)
               return
@@ -108,7 +108,7 @@ module.exports = {
                     .setImage(`attachment://${attachment.name}`),
                 ],
                 files: [attachment],
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
               });
               //Logging
               await logManager.logString(`${tag} viewed the balance of the User ${foreignUser.tag}`)
@@ -130,7 +130,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("coins.no_account_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       })
       await logManager.logString(`${tag} tried to use /balance without an Account`)
       return
@@ -168,7 +168,7 @@ module.exports = {
           .setImage(`attachment://${attachment.name}`),
       ],
       files: [attachment],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     //Logging
     await logManager.logString(`${tag} checked their balance: ${userData.balance ? userData.balance : 0} Coins`)

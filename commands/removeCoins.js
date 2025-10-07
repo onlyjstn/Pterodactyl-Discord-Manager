@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -33,7 +33,7 @@ module.exports = {
    * @returns 
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: userData } = interaction, fetchedUser = await userData.fetch(true), { accentColor } = fetchedUser
     //Get User to add Coins to
     let user = interaction.options.getUser("user"), amount = interaction.options.getNumber("amount"), receiverData = await databaseInterface.getObject(user.id)
@@ -48,7 +48,7 @@ module.exports = {
               .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
               .setColor(accentColor ? accentColor : 0xe6b04d)
           ],
-          ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
         //Logging
         await logManager.logString(`${tag} tried to remove ${amount} Coins from User ${user.tag} without admin permissions`)
@@ -65,7 +65,7 @@ module.exports = {
                   .setDescription(`\`\`\`${await t("coins.no_account_send_text")}\`\`\``)
                   .setColor(accentColor ? accentColor : 0xe6b04d)
               ],
-              ephemeral: true
+              flags: MessageFlags.Ephemeral
             });
             await logManager.logString(`${tag} tried to remove Coins from a User who does not have an Account`)
             break;
@@ -80,7 +80,7 @@ module.exports = {
                   .setDescription(`\`\`\`${amount} ${await t("coins.admin_remove_coins_text")} \ ${user.tag} \ ${await t("coins.admin_remove_coins_text_two")}\`\`\``)
                   .setColor(accentColor ? accentColor : 0xe6b04d)
               ],
-              ephemeral: true
+              flags: MessageFlags.Ephemeral
             });
             //Logging
             await logManager.logString(`${tag} removed ${amount} Coins from the User ${user.tag}`)

@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, SelectMenuOptionBuilder } = require("discord.js")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, SelectMenuOptionBuilder, MessageFlags } = require("discord.js")
 const dotenv = require("dotenv");
 dotenv.config({
     path: "./config.env",
@@ -32,7 +32,7 @@ module.exports = {
     * @returns 
     */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager) {
-        await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
         let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         let userData = await databaseInterface.getObject(userId)
 
@@ -49,7 +49,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             //Logging
             await logManager.logString(`${tag} tried to use /giftcode-manager without admin permissions`)
@@ -96,7 +96,7 @@ module.exports = {
         await interaction.editReply({
             embeds: [giftCodesEmbed],
             components: [row],
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         })
     }
 }

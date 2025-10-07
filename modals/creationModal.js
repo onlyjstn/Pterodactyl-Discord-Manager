@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "creationModal",
@@ -25,7 +25,7 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     //Get Modal Data
     let { fields, user: { id, tag }, user } = interaction, eMail = fields.getTextInputValue("usereMail"), name = fields.getTextInputValue("userName"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     //Add User to Database and API
@@ -49,7 +49,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("account_manager_events.account_creation_fail_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+    flags: MessageFlags.Ephemeral,
       });
 
 
@@ -72,7 +72,7 @@ module.exports = {
           .setURL(process.env.PTERODACTYL_API_URL)
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true
+  flags: MessageFlags.Ephemeral
     });
     //Logging
     await logManager.logString(`${tag} created a Panel-Account. Credentials: ${eMail}, ${name}`)

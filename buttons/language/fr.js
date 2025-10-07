@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "fr",
@@ -24,7 +24,7 @@ module.exports = {
    * @param {TranslationManager} t
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true }), { user: { id }, user} = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral }), { user: { id }, user} = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     //Set User Language to Selected Option
     let translate = new TranslationManager(id), langShort = "fr-FR"
     await translate.saveUserLanguage(langShort)
@@ -35,7 +35,7 @@ module.exports = {
         .setDescription(`\`\`\`${await t("language_event.change_language_text")} fr-FR\`\`\``)
         .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

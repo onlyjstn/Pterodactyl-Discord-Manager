@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 const dotenv = require("dotenv");
 //Initializte DotEnv
 dotenv.config({
@@ -32,7 +32,7 @@ module.exports = {
    * @returns 
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(userId)
     let shopItems = await databaseInterface.getObject("shop_items_servers");
     //Check if User is on the Admin List
@@ -46,7 +46,7 @@ module.exports = {
               .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
               .setColor(accentColor ? accentColor : 0xe6b04d)
           ],
-          ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
         //Logging
         await logManager.logString(`${tag} tried to use /shop_manager without admin permissions`)
@@ -89,7 +89,7 @@ module.exports = {
             await interaction.editReply({
               embeds: [shopEmbed],
               components: [new ActionRowBuilder().addComponents(shopSelect)],
-              ephemeral: true
+              flags: MessageFlags.Ephemeral
             })
           }
           case false: {
@@ -116,7 +116,7 @@ module.exports = {
             await interaction.editReply({
               embeds: [shopEmbed],
               components: [new ActionRowBuilder().addComponents(shopSelect)],
-              ephemeral: true
+              flags: MessageFlags.Ephemeral
             })
           }
         }

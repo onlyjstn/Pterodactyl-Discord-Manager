@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -36,7 +36,7 @@ module.exports = {
    * @returns 
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     let empfaenger = interaction.options.getUser("user"), transferAmount = interaction.options.getInteger("amount"), userData = await databaseInterface.getObject(userId), receiverData = await databaseInterface.getObject(empfaenger.id)
     let transferMessage = interaction.options.getString("message")
@@ -51,7 +51,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("transfer_coins.no_account_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag} tried to use /transfer_coins without an account`)
@@ -68,7 +68,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("transfer_coins.no_account_receiver_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag} tried to transfer Coins to a User who does not have an Account`)
@@ -87,7 +87,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("transfer_coins.lower_than_zero_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag} tried to transfer 0 Coins to ${empfaenger.tag}`)
@@ -104,7 +104,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("transfer_coins.not_enough_coins_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag} tried to transfer ${flooredAmount} Coins to ${empfaenger.tag}, but did not have enough Coins: ${await economyManager.getUserBalance(userId)}`)
@@ -169,7 +169,7 @@ module.exports = {
           .setDescription(`\`\`\`${flooredAmount} ${await t("transfer_coins.success_text")} ${empfaenger.username}` + "```")
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, ComponentType } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, ComponentType, MessageFlags } = require("discord.js")
 const { UtilityCollection } = require("../../classes/utilityCollection");
 
 
@@ -27,7 +27,7 @@ module.exports = {
      * @param {TranslationManager} t
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager) {
-        await interaction.deferReply({ ephemeral: true }), { user: { id: userId, tag }, user: iUser, channel } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral }), { user: { id: userId, tag }, user: iUser, channel } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser
 
         let deleteCode = interaction.message.embeds[0].data.footer.text
 
@@ -39,7 +39,7 @@ module.exports = {
                     .setTitle(`\`\`\`❌ ${await t("errors.error_label")} ❌\`\`\``)
                     .setDescription(`\`\`\`${await t("giftcode_manager.code_not_found")}\`\`\``)
                     .setColor(accentColor ? accentColor : 0xe6b04d)],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             })
             return
         }
@@ -49,7 +49,7 @@ module.exports = {
                 .setTitle(`\`\`\`🗑️ ${await t("giftcode_manager.main_label")} 🗑️\`\`\``)
                 .setDescription(`\`\`\`${await t("giftcode_manager.deleted_text")}\`\`\``)
                 .setColor(accentColor ? accentColor : 0xe6b04d)],
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         })
     }
 }

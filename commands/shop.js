@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -27,19 +27,19 @@ module.exports = {
    * @returns 
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     let userData = await databaseInterface.getObject(userId), shopItems = await databaseInterface.getObject("shop_items_servers");
     //Check if User has an Account
     if (userData == null) {
       await interaction.editReply({
-        embeds: [
+  embeds: [
           new EmbedBuilder()
             .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
             .setDescription(`\`\`\`${await t("shop.no_account_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+  flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag} tried to use /shop without an Account`)
@@ -71,7 +71,7 @@ module.exports = {
 
         await interaction.editReply({
           embeds: [shopEmbed],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         })
         break;
       }
@@ -97,7 +97,7 @@ module.exports = {
         await interaction.editReply({
           embeds: [shopEmbed],
           components: [new ActionRowBuilder().addComponents(shopSelect)],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         })
       }
     }

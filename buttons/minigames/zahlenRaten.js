@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, MessageFlags } = require("discord.js")
 const { UtilityCollection } = require("../../classes/utilityCollection");
 
 
@@ -26,7 +26,7 @@ module.exports = {
    * @param {TranslationManager} t
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true }), { user: { accentColor, id, tag }, channel } = interaction, userBalance = await economyManager.getUserBalance(id), userDaily = await economyManager.getUserDaily(id)
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral }), { user: { accentColor, id, tag }, channel } = interaction, userBalance = await economyManager.getUserBalance(id), userDaily = await economyManager.getUserDaily(id)
     let utility = new UtilityCollection()
     //Einsatz Embeds und Select
 
@@ -44,7 +44,7 @@ module.exports = {
 
     await interaction.editReply({
       embeds: [einsatzEmbed],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
 
     //Get Messages and Filter for the Users bet
@@ -65,7 +65,7 @@ module.exports = {
       if (Number.isFinite(einsatz) == false || einsatz <= 0 || einsatz > 150) {
         await interaction.editReply({
           embeds: [einsatzNoNumber],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
         //Logging
         await logManager.logString(`${tag} tried to play a minigame with insufficient coins / remaining daily limit.`)
@@ -77,7 +77,7 @@ module.exports = {
       if (einsatz > userBalance || userDaily >= 300 || (300 - userDaily) < (einsatz * 2)) {
         await interaction.editReply({
           embeds: [einsatzNoNumber],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         });
         //Logging
         await logManager.logString(`${tag} tried to play a minigame with insufficient coins / remaining daily limit.`)
@@ -93,7 +93,7 @@ module.exports = {
             .setColor(accentColor ? accentColor : 0xe6b04d)
 
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
 
       await economyManager.removeCoins(id, einsatz), randomResult = await utility.getRandomInteger(5)
@@ -119,7 +119,7 @@ module.exports = {
                 .setDescription(`\`\`\`${await t("minigames_events.guess_the_number_loose_text")} ${randomResult}!\n${await t("minigames_events.guess_the_number_loose_text_two")}\`\`\``)
                 .setColor(accentColor ? accentColor : 0xe6b04d)
             ],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
           });
           //Logging
           await logManager.logString(`${tag} lost ${einsatz} Coins by playing a minigame.`)
@@ -139,7 +139,7 @@ module.exports = {
                 .setDescription(`**\`\`\`${await t("minigames_events.guess_the_number_win_text")}\`\`\`**\n\`\`\`${await t("minigames_events.guess_the_number_win_text_two")} ${einsatz * 2} ${await t("minigames_events.guess_the_number_win_text_three")} ${await economyManager.getUserDaily(id)} ${await t("minigames_events.guess_the_number_win_text_four")}\`\`\``)
                 .setColor(accentColor ? accentColor : 0xe6b04d)
             ],
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
           })
           //Logging
           await logManager.logString(`${interaction.user.tag} won ${einsatz * 2} Coins by playing a minigame with a use of ${einsatz} Coins`)
@@ -154,7 +154,7 @@ module.exports = {
               .setDescription(`\`\`\`${await t("minigames_events.guess_the_number_loose_text")} ${randomResult}!\n${await t("minigames_events.guess_the_number_loose_text_two")}\`\`\``)
               .setColor(accentColor ? accentColor : 0xe6b04d)
           ],
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
         //Logging
         await logManager.logString(`${tag} lost ${einsatz} Coins by playing a minigame.`)

@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 const { CanvasPreset } = require("../../classes/canvasPresets")
 
 module.exports = {
@@ -56,7 +56,7 @@ module.exports = {
                     .setColor(accentColor ? accentColor : 0xe6b04d)
                         .setImage(`attachment://${attachment.name}`),
                 ],
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 files: [attachment],
             });
             //Logging

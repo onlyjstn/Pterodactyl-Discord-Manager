@@ -7,7 +7,7 @@ const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { GiftCodeManager } = require("./../classes/giftCodeManager")
-const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SelectMenuOptionBuilder, ComponentType, SelectMenuComponent, SelectMenuInteraction } = require("discord.js")
+const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SelectMenuOptionBuilder, ComponentType, SelectMenuComponent, SelectMenuInteraction, MessageFlags } = require("discord.js")
 
 module.exports = {
     customId: "addCodeItemModal",
@@ -27,7 +27,7 @@ module.exports = {
      * @returns
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager) {
-        await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         let { fields, user: { tag, id }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         let itemCode = fields.getTextInputValue("itemCode"), itemValue = fields.getTextInputValue("itemValue")
 
@@ -39,7 +39,7 @@ module.exports = {
                     .setDescription(`\`\`\`${await t("giftcode_manager.single_use_text")}\`\`\``)
                     .setColor(accentColor ? accentColor : 0xe6b04d)
             ],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             components: [
                 new ActionRowBuilder().addComponents(
                     new StringSelectMenuBuilder()
@@ -81,10 +81,10 @@ module.exports = {
 
                 await logManager.logString(`Giftcode: ${itemCode} with Value of: ${itemValue} and Type of ${singleUser} has been created by ${user.tag}`)
 
-                await i.deferReply({ ephemeral: true })
+                await i.deferReply({ flags: MessageFlags.Ephemeral })
                 await i.editReply({
                     embeds: [codeCreatedEmbed],
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                     components: []
                 })
         })

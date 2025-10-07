@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
     customId: "resetPassword",
@@ -27,7 +27,7 @@ module.exports = {
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
         let { user: { id, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(id)
-        await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         if (!userData) {
             //Reply to User
             await interaction.editReply({
@@ -37,7 +37,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("account_manager_modal.password_no_account_text")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             //Logging
             await logManager.logString(`${tag} tried to reset his account-password but failed due to him not having an account.`)
@@ -56,7 +56,7 @@ module.exports = {
                     .setDescription(`\`\`\`${await t("account_manager_modal.password_text")} ${password}\`\`\``)
                     .setColor(accentColor ? accentColor : 0xe6b04d)
             ],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
         //Logging
         await logManager.logString(`${tag} succesfully reset his password.`)

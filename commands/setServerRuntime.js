@@ -8,7 +8,7 @@ const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const continueButton = require("./../buttons/runtimeOverride/continue")
 const cancelButton = require("./../buttons/runtimeOverride/cancel")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } = require("discord.js")
 const cancel = require("./../buttons/runtimeOverride/cancel")
 
 // Redeem Command
@@ -40,7 +40,7 @@ module.exports = {
      * @returns 
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager) {
-        await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
         let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         let userData = await databaseInterface.getObject(userId)
         let uuid = interaction.options.getString("uuid"), runtime = interaction.options.getInteger("runtime"), price = interaction.options.getNumber("price")
@@ -55,7 +55,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             return;
         }
@@ -72,7 +72,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("override_runtime.error")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             })
             return
         }
@@ -103,7 +103,7 @@ module.exports = {
                         .setCustomId("overrideFalse")
                         .setStyle(ButtonStyle.Danger)
                 ])],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             })
 
             const answerFilter = i => {
@@ -148,14 +148,14 @@ module.exports = {
 
         await logManager.logString(`Server Runtime has been overwritten for UUID ${uuid}, Runtime ${runtime}, Price ${price} for User ${serverUserId} by ${userId}`)
 
-        await interaction.editReply({
+            await interaction.editReply({
             embeds: [
                 new EmbedBuilder()
                     .setTitle(`\`\`\`✅ ${await t("override_runtime.override_label")} ✅\`\`\``)
                     .setDescription(`\`\`\`${await t("override_runtime.override_text")}\`\`\``)
                     .setColor(accentColor ? accentColor : 0xe6b04d)
             ],
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         })
     }
 }

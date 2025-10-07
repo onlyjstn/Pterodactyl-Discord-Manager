@@ -148,7 +148,7 @@
 	"language_event.main_label": "Language",
 	"minigames.blackjack_label": "Blackjack!",
 	"minigames.main_label": "Minigames",
-	"minigames.main_text": "Was kann ich hier machen? \n\n\nSpiele hier um deine Coins! Auf was hast du heute Lust?\nKlicke auf den jeweiligen Button um das Spiel zu starten!\n```\n```🔢 Zahlen raten!\n➥ Errate die richtige Zahl - du musst zwischen 1, ..., 5 wählen.\n``````🤴 Blackjack!\n➥ Spiele noch heute eine Runde Blackjack!```\n```⠀⠀⠀⠀⠀⠀⠀⠀⠀⛔ Achtung Achtung - Suchtgefahr! ⛔",
+	"minigames.main_text": "Was kann ich hier machen? \n\n\nSpiele hier um deine Coins! Auf was hast du heute Lust?\nKlicke auf den jeweiligen Button um das Spiel zu starten!\n```\n```🔢 Zahlen raten!\n➥ Errate die richtige Zahl - du musst zwischen 1, ..., 5 wählen.\n``````🤴 Blackjack!\n➥ Spiele noch heute eine Runde Blackjack!\n``````⁉️ Trivia Quiz!\n➥ Beantworte die Frage korrekt.\n``````⠀⠀⠀⠀⠀⠀⠀⠀⛔ Achtung Achtung - Suchtgefahr! ⛔",
 	"minigames.no_account_label": "Kein Account",
 	"minigames.no_account_text": "Du kannst keine Minigames spielen, da du keinen Account besitzt.",
 	"minigames.zahlen_label": "Zahlen Raten!",

@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "createSelectedItem",
@@ -31,7 +31,7 @@ module.exports = {
     const selectedValue = Array.isArray(values) ? values[0] : values;
     const itemIndex = parseInt(selectedValue, 10);
     if (!shopItems || !Array.isArray(shopItems) || shopItems.length === 0) {
-      await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -39,13 +39,13 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_select.no_shop_items") || "Shop is empty."}\`\`\``)
             .setColor(0xe6b04d),
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       await logManager.logString(`${tag} tried to buy but shop_items_servers is empty or missing.`);
       return;
     }
     if (isNaN(itemIndex) || itemIndex < 0 || itemIndex >= shopItems.length) {
-      await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -53,7 +53,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_select.invalid_selection") || "Invalid shop selection."}\`\`\``)
             .setColor(0xe6b04d),
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       await logManager.logString(`${tag} made an invalid shop selection: ${selectedValue}`);
       return;
@@ -62,7 +62,7 @@ module.exports = {
     const userBalance = await economyManager.getUserBalance(userId);
     const item = shopItems[itemIndex];
     if (!item || !item.data) {
-      await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -70,7 +70,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_select.configuration") || "Selected shop item is not configured correctly."}\`\`\``)
             .setColor(0xe6b04d),
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       await logManager.logString(`${tag} selected malformed shop item at index ${itemIndex}`);
       return;
@@ -82,7 +82,7 @@ module.exports = {
     const { accentColor } = fetchedUser;
     const { e_mail } = userData || {};
     if (!e_mail) {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
@@ -90,12 +90,12 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop.no_account_text") || "No account/email associated with your user."}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d),
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       await logManager.logString(`${tag} tried to buy but no email (panel account) registered.`);
       return;
     }
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
     //Check if item is configured correctly
       //Get Nests
@@ -112,7 +112,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_select.configuration")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
       return;
     }
@@ -126,7 +126,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_select.not_enough_coins.text")} ${price} ${await t("shop_select.not_enough_coins.text_two")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
       //Logging
       await logManager.logString(`${tag} tried to buy a Shop Item with insufficient coins: ${userBalance}. Item Name: ${name}`)
@@ -168,7 +168,7 @@ module.exports = {
               .setDescription(`\`\`\`${await t("shop_select.server_not_created_text")}\`\`\``)
               .setColor(accentColor ? accentColor : 0xe6b04d),
           ],
-          ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         });
         await logManager.logString(`${tag}'s shop item / server creation caused an error: ${e.stack || e.message}`);
         return;
@@ -183,7 +183,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_select.server_not_created_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d),
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       await logManager.logString(`${tag}'s shop item / server creation failed without response.`);
       return;
@@ -199,7 +199,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_select.server_not_created_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true
+          flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag}'s shop item / server creation caused an error.`)
@@ -222,7 +222,7 @@ module.exports = {
           .setDescription(`\`\`\`${await t("shop_select.server_created_text")}\`\`\``)
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
 
     await logManager.logString(`${tag} bought a Shop Item with the Name: ${name} for ${price} Coins.`)

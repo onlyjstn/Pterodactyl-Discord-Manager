@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
     customId: "deleteAccount",
@@ -27,7 +27,7 @@ module.exports = {
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
         let { user: { id, tag }, user, channel } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(id)
-        await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         //User has no Account, that could be deleted
         if (!userData) {
             await interaction.editReply({
@@ -37,7 +37,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("account_manager_modal.deletion_no_account_text")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             //Logging
             await logManager.logString(`${tag} tried to delete his account but failed due to him not having an account.`)
@@ -52,7 +52,7 @@ module.exports = {
                     .setDescription(`\`\`\`${await t("account_manager.deletion_text")}\`\`\``)
                     .setColor(accentColor ? accentColor : 0xe6b04d)
             ],
-            ephemeral: true,
+                flags: MessageFlags.Ephemeral,
         });
         //Await User Confirmation and collect Message
         const filter = (m) => m.author.id === id;
@@ -77,7 +77,7 @@ module.exports = {
                             .setDescription(`\`\`\`${await t("account_manager.deletion_fail_text")}\`\`\``)
                             .setColor(accentColor ? accentColor : 0xe6b04d)
                     ],
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                 });
                 return;
             }
@@ -94,7 +94,7 @@ module.exports = {
                         .setDescription(`\`\`\`${await t("account_manager_modal.deletion_success_text")}\`\`\``)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
                 ],
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
             //Logging
             await logManager.logString(`${tag} deleted his account.`);

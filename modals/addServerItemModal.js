@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "addServerItemModal",
@@ -25,7 +25,7 @@ module.exports = {
    * @returns
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     let { fields, user: { tag, id }, user } = interaction, itemEggId = fields.getTextInputValue("serverEggId"), itemDatabases = fields.getTextInputValue("serverDatabases"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
 
     //Get Data from cache
@@ -50,7 +50,7 @@ module.exports = {
           .setDescription(`╠ **Egg-ID:** ${itemEggId}\n╠ **Databases:** ${itemDatabases}`)
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true,
+  flags: MessageFlags.Ephemeral,
       //Confirm Button
       components: [
         new ActionRowBuilder().addComponents(

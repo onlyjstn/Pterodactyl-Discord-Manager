@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js");
 const { data } = require("../../commands/serverManager");
 
 
@@ -28,7 +28,7 @@ module.exports = {
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
     let { user: { id, accentColor, tag } } = interaction, cachedData = await cacheManager.getCachedData(id)
-    await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     await cacheManager.clearCache(id)
 
@@ -41,7 +41,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("add_item_modal_confirm.no_saved_data_text")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -60,7 +60,7 @@ module.exports = {
             .setDescription(`\`\`\`${await t("shop_select.configuration")}\`\`\``)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-        ephemeral: true
+        flags: MessageFlags.Ephemeral
       });
       return;
     }
@@ -75,7 +75,7 @@ module.exports = {
           .setDescription(`\`\`\`${await t("add_item_modal_confirm.shop_item_created_text")}\`\`\``)
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
     //Logging
     await logManager.logString(`${tag} succesfully added an item to the Shop: CPU: ${cpu}, RAM: ${ram}, DISK: ${disk}, SWAP: ${swap}, BACKUPS: ${backups}`)

@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "overrideTrue",
@@ -24,7 +24,7 @@ module.exports = {
    * @param {TranslationManager} t
    */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, uuid, serverIdentifier, runtime, price) {
-    await interaction.deferReply({ephemeral: true}), { user: { accentColor, id, tag }, channel } = interaction
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral }), { user: { accentColor, id, tag }, channel } = interaction
 
     //Get ServerUserId
     let userId = await panel.getUserIDfromUUID(uuid)
@@ -47,7 +47,7 @@ module.exports = {
         .setDescription(`\`\`\`${await t("override_runtime.override_text")}\`\`\``)
         .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     })
   }
 }

@@ -6,7 +6,7 @@ const { CacheManager } = require("../../../classes/cacheManager")
 const { EconomyManager } = require("../../../classes/economyManager")
 const { LogManager } = require("../../../classes/logManager")
 const { DataBaseInterface } = require("../../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, ComponentType } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, escapeInlineCode, ComponentType, MessageFlags } = require("discord.js")
 const { UtilityCollection } = require("../../../classes/utilityCollection");
 const { request } = require("undici");
 
@@ -28,7 +28,7 @@ module.exports = {
      * @param {TranslationManager} t
      */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, mode) {
-        await interaction.deferReply({ ephemeral: true }), { user: { id: userId, tag }, user: iUser, channel } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser, userBalance = await economyManager.getUserBalance(userId), userDaily = await economyManager.getUserDaily(userId)
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral }), { user: { id: userId, tag }, user: iUser, channel } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser, userBalance = await economyManager.getUserBalance(userId), userDaily = await economyManager.getUserDaily(userId)
         const einsatzEmbed = new EmbedBuilder()
             .setTitle(`\`\`\`💰 ${await t("minigames_events.bet_label")} 💰\`\`\``)
             .setDescription(` >>> **${await t("minigames_events.bet_text")}**`)
@@ -43,7 +43,7 @@ module.exports = {
 
         await interaction.editReply({
             embeds: [einsatzEmbed],
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
 
         //Get Messages and Filter for the Users bet
@@ -65,7 +65,7 @@ module.exports = {
             if (Number.isFinite(einsatz) == false || einsatz <= 0) {
                 await interaction.editReply({
                     embeds: [einsatzNoNumber],
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 });
                 //Logging
                 await logManager.logString(`${tag} tried to play a minigame with insufficient coins / remaining daily limit.`)
@@ -78,7 +78,7 @@ module.exports = {
             if (einsatz * winFactor > userBalance || userDaily >= 300 || (300 - userDaily) < (einsatz * winFactor)) {
                 await interaction.editReply({
                     embeds: [einsatzNoNumber],
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 });
                 //Logging
                 await logManager.logString(`${tag} tried to play a minigame with insufficient coins / remaining daily limit.`)
@@ -166,7 +166,7 @@ module.exports = {
             await interaction.editReply({
                 embeds: [questionEmbed],
                 components: [buttonRow],
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             })
 
             const answerFilter = i => {
@@ -177,7 +177,7 @@ module.exports = {
 
             answerCollector.on('collect', async answerButton => {
                 try {
-                await answerButton.deferReply({ephemeral: true})
+                await answerButton.deferReply({ flags: MessageFlags.Ephemeral })
                 } catch {}
                 let { customId } = answerButton
                 let answerObject = {
@@ -202,7 +202,7 @@ module.exports = {
                                 )
                         ],
                         components: [],
-                        ephemeral: true
+                        flags: MessageFlags.Ephemeral
                     })
                     return;
                 }
@@ -218,7 +218,7 @@ module.exports = {
                             .setColor(accentColor ? accentColor : 0xe6b04d)
                     ],
                     components: [],
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 })
             });
 
@@ -233,7 +233,7 @@ module.exports = {
                             .setColor(accentColor ? accentColor : 0xe6b04d)
                     ],
                     components: [],
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 })
             });
             })

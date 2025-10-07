@@ -6,7 +6,7 @@ const { CacheManager } = require("../../classes/cacheManager")
 const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js");
 const { data } = require("../../commands/serverManager");
 
 
@@ -37,7 +37,7 @@ module.exports = {
           .setDisabled(true)
           .setLabel(`${await t("shop_manager_delete.button_label")}`)
     )],
-      ephemeral: true
+      flags: MessageFlags.Ephemeral
     });
 
     let { user: { tag, id, accentColor }, message: { embeds } } = interaction, { data: { fields } } = embeds[0], { value } = fields[0], itemIndex = value.replaceAll("`", "")
@@ -54,7 +54,7 @@ module.exports = {
           .setDescription(`\`\`\`${await t("shop_manager_delete.item_deleted_text")}\`\`\``)
           .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
 
     //Logging

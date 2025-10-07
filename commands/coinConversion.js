@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -27,7 +27,7 @@ module.exports = {
   * @returns 
   */
   async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-    await interaction.deferReply({ ephemeral: true })
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     await interaction.editReply({
       embeds: [
@@ -36,7 +36,7 @@ module.exports = {
         .setDescription(`\`\`\`${await economyManager.getTotalCoinAmount()} ${await t("coins.umlauf.coin_text")}\`\`\``)
         .setColor(accentColor ? accentColor : 0xe6b04d)
       ],
-      ephemeral: true,
+      flags: MessageFlags.Ephemeral,
     });
     //Logging
     await logManager.logString(`${tag} checked the Coins in rotation: ${await economyManager.getTotalCoinAmount()} Coins`)

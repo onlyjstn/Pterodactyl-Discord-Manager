@@ -6,7 +6,7 @@ const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
 const { UtilityCollection } = require("../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
     customId: "giftCodeSelect",
@@ -35,7 +35,7 @@ module.exports = {
             return
         }
 
-        await interaction.deferReply({ ephemeral: true })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
 
         let giftCodesEmbed = new EmbedBuilder()
@@ -55,7 +55,7 @@ module.exports = {
                     .setLabel(`${await t("giftcode_manager.delete_code_label")}`)
                     .setStyle(ButtonStyle.Danger)
             ])],
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         })
     }
 }

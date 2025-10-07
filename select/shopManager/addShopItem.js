@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
   customId: "addShopItem",
@@ -32,7 +32,7 @@ module.exports = {
     switch (shopItems.length >= 24) {
       //More than 24 Items
       case true: {
-        await interaction.deferReply({ ephemeral: true })
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral })
         await interaction.editReply({
           embeds: [
             new EmbedBuilder()
@@ -40,7 +40,7 @@ module.exports = {
               .setDescription(`\`\`\`${await t("add_item_button.twentyfour_limit_text")}\`\`\``)
               .setColor(accentColor ? accentColor : 0xe6b04d)
           ],
-          ephemeral: true
+          flags: MessageFlags.Ephemeral
         })
         //Logging
         await logManager.logString(`${tag} tried to add more than 24 Items to the Shop.`)
