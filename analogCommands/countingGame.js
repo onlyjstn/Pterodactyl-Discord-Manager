@@ -2,6 +2,12 @@ const { DataBaseInterface } = require("./../classes/dataBaseInterface");
 const { BaseInteraction, Client, Message } = require("discord.js");
 const { EconomyManager } = require("./../classes/economyManager");
 
+const states = {
+    INTEGER: "INTEGER",
+    BINARY: "BINARY",
+    HEXADECIMAL: "HEXADECIMAL",
+}
+
 module.exports = {
   customId: "countingGame",
   /**

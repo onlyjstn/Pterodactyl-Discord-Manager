@@ -6,7 +6,7 @@ const { EconomyManager } = require("./../classes/economyManager")
 const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
-const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
+const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags, Embed } = require("discord.js")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,17 +34,40 @@ module.exports = {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
     let channel = interaction.options.getChannel("channel")
-    databaseInterface.setObject("countingChannel", channel)
 
-            await interaction.editReply({
-              embeds: [
+    if(!channel.isTextBased()) {
+        await interaction.editReply({
+            embeds: [
                 new EmbedBuilder()
-                  .setTitle(`\`\`\`${await t("counting.counting_channel")}\`\`\``)
-                  .setDescription(`${await t("counting.counting_channel_set")}: <#${channel.id}>`)
+                  .setTitle(`\`\`\`⛔ ${await t("counting.incorrect_channel")} ⛔\`\`\``)
+                  .setDescription(`\`\`\`${await t("counting.incorrect_channel_text")}\`\`\``)
                   .setColor(accentColor ? accentColor : 0xe6b04d)
               ],
               flags: MessageFlags.Ephemeral
-            });
+        });
+        await logManager.logString(`${tag} tried to set a Counting-Game Channel which is not text-based`)
+        return;
+    }
+
+    databaseInterface.setObject("countingChannel", channel)
+
+    await interaction.editReply({
+        embeds: [
+            new EmbedBuilder()
+                .setTitle(`\`\`\`${await t("counting.counting_channel")}\`\`\``)
+                .setDescription(`${await t("counting.counting_channel_set")}: <#${channel.id}>`)
+                .setColor(accentColor ? accentColor : 0xe6b04d)
+            ],
+            flags: MessageFlags.Ephemeral
+    });
+
+    const start_embed = new EmbedBuilder()
+        .setTitle(`\`\`\`${await t("counting.counting_channel_start")}\`\`\``)
+        .setDescription(`${await t("counting.counting_channel_start_text")}: <#${channel.id}>`)
+        .setColor(accentColor ? accentColor : 0xe6b04d)
+    
+
+    await channel.send({ embeds: [start_embed] })
 
     await logManager.logString("Channel for the Counting System has been set to " + channel.name + " with ID: " + channel.id + " by " + user.globalName + " with ID: " + user.id)
   },

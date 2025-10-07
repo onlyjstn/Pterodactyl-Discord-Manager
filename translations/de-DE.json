@@ -291,5 +291,7 @@
 	"minigames.dealer_shown": "Dealer",
 	"minigames.bet_label_short": "Einsatz",
 	"counting.counting_channel": "Setze Channel",
-	"counting.counting_channel_set": "Channel für das Counting-System gesetzt auf:"
+	"counting.counting_channel_set": "Channel für das Counting-System gesetzt auf:",
+	"counting.incorrect_channel": "Inkorrekter Channeltyp",
+	"counting.incorrect_channel_text": "Der ausgewählte Channel ist nicht textbasiert.\nBitte wähle einen textbasierten Channel aus!"
 }

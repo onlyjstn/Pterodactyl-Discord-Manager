@@ -291,5 +291,7 @@
 	"minigames.dealer_shown": "Croupier",
 	"minigames.bet_label_short": "Mise",
 	"counting.counting_channel": "Définir le salon",
-	"counting.counting_channel_set": "Salon pour le système de comptage défini sur :"
+	"counting.counting_channel_set": "Salon pour le système de comptage défini sur :",
+	"counting.incorrect_channel": "Type de salon incorrect",
+	"counting.incorrect_channel_text": "Le salon sélectionné n’est pas un salon textuel.\nVeuillez choisir un salon textuel !"
 }

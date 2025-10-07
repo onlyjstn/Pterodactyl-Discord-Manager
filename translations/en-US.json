@@ -292,5 +292,7 @@
 	"minigames.dealer_shown": "Dealer",
 	"minigames.bet_label_short": "Bet",
 	"counting.counting_channel": "Set Channel",
-	"counting.counting_channel_set": "Channel for the counting system set to:"
+	"counting.counting_channel_set": "Channel for the counting system set to:",
+	"counting.incorrect_channel": "Incorrect channel type",
+	"counting.incorrect_channel_text": "The selected channel is not text-based.\nPlease select a text-based channel!"
 }
