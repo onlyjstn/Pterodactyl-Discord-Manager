@@ -272,5 +272,23 @@
 	"transfer_coins.no_account_text": "You don't have an account with which you can send coins!",
 	"transfer_coins.not_enough_coins_label": "Too few coins",
 	"transfer_coins.not_enough_coins_text": "You do not have enough coins to transfer the desired amount.",
-	"transfer_coins.success_text": "Coin|s have been successfully sent to:"
+	"transfer_coins.success_text": "Coin|s have been successfully sent to:",
+	"minigames.result_win": "You won",
+	"minigames.result_loss": "You lost",
+	"minigames.result_cancel": "Cancelled",
+	"minigames.result_error": "Game error",
+	"minigames.daily_total": "Daily total",
+	"minigames.your_bet": "Your bet",
+	"minigames.loss_amount": "Loss amount",
+	"minigames.won_amount": "Won amount",
+	"minigames.hit": "Hit",
+	"minigames.stand": "Stand",
+	"minigames.double": "Double",
+	"minigames.split": "Split",
+	"minigames.cancel": "Cancel",
+	"minigames.help_contact": "Contact an admin if this persists"
+	,
+	"minigames.your_hand": "Your Hand",
+	"minigames.dealer_shown": "Dealer (shown)",
+	"minigames.bet_label_short": "Bet"
 }

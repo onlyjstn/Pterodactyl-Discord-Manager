@@ -49,7 +49,7 @@ module.exports = {
             // Interaction is Button
         } else if (interaction.isButton()) {
             //Exclude Blackjack Buttons 
-            if (["discord-blackjack-hitbtn", "discord-blackjack-splitbtn", "discord-blackjack-standbtn", "discord-blackjack-ddownbtn", "discord-blackjack-cancelbtn"].includes(interaction.customId)) return;
+            if (["discord-blackjack-hitbtn", "discord-blackjack-splitbtn", "discord-blackjack-standbtn", "discord-blackjack-ddownbtn", "discord-blackjack-cancelbtn", "pdm-bj-hit", "pdm-bj-split", "pdm-bj-stand", "pdm-bj-double", "pdm-bj-cancel"].includes(interaction.customId)) return;
             //Exlude Trivia Buttons
             if (["A", "B", "C", "D"].includes(interaction.customId)) return;
             //Exclude Runtime Override Buttons

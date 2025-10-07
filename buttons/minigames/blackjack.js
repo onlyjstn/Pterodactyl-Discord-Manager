@@ -7,7 +7,7 @@ const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js")
-const blackjack = require("discord-blackjack");
+const { playGame } = require("../../lib/blackjackEngine")
 
 module.exports = {
   customId: "blackjack",
@@ -82,114 +82,92 @@ module.exports = {
         await logManager.logString(`${tag} tried to play a minigame with insufficient coins / remaining daily limit.`)
         return;
       }
+      try {
+        // charge base bet up-front
+        await economyManager.removeCoins(id, einsatz)
 
-      //Start Blackjack Game urgh I am too lazy to Code a Blackjack Game myself ;(
-      await blackjack(interaction, {
-        transition: "update",
-      })
-        .then(async (res) => {
-          let { result } = res
+        const res = await playGame(interaction, { transition: "update", bet: einsatz, t });
+        const { result, outcomes = [], dealer, multipliers = [] } = res;
 
+        // multipliers: array of 1 or 2 per hand (double)
 
-          //User lost ---
-          if (result == "LOSE") {
-            await economyManager.removeCoins(id, einsatz * 1.5)
-            //Reply to User
-            await interaction.followUp({
-              embeds: [
-                new EmbedBuilder()
-                  .setTitle(`\`\`\`🤴 ${await t("minigames.blackjack_label")} 🤴\`\`\``)
-                  .setDescription(`\`\`\`${await t("minigames_events.blackjack_loose_text")} ${einsatz} ${await t("minigames_events.blackjack_loose_text_two")} ${0.5 * einsatz} Coins!\`\`\``)
-                  .setColor(accentColor ? accentColor : 0xe6b04d)
-              ],
-              components: [
-                new ActionRowBuilder().addComponents(
-                  new ButtonBuilder()
-                    .setStyle("Danger")
-                    .setCustomId("blackjack")
-                    .setLabel(`🔁 ${await t("minigames.replay_label")}`)
-                )
-              ],
-              ephemeral: true
-            });
-            //Logging
-            await logManager.logString(`${tag} lost ${einsatz + 0.5 * einsatz} Coins by playing a minigame with a use of ${einsatz} Coins`)
-            return;
+        // determine multipliers (array) and outcomes (array)
+        const multipliersArr = multipliers.length ? multipliers : outcomes.map(() => 1)
+
+        // charge extra stakes for splits/doubles (we already removed base bet)
+        const extraCharges = (multipliersArr.length - 1) * einsatz + multipliersArr.reduce((acc, m) => acc + (m - 1) * einsatz, 0)
+        if (extraCharges > 0) await economyManager.removeCoins(id, extraCharges)
+
+        // compute payouts
+        let totalStake = 0
+        let totalPayout = 0
+        for (let i = 0; i < multipliersArr.length; i++) {
+          const m = multipliersArr[i]
+          const stake = einsatz * m
+          totalStake += stake
+          const out = outcomes[i] || 'LOSE'
+          if (out === 'WIN') {
+            // when stakes were removed up-front, add back stake*2 to return stake + profit
+            totalPayout += stake * 2
+          } else if (out === 'PUSH') {
+            // return stake
+            totalPayout += stake
+          } else {
+            // LOSE => nothing
           }
+        }
 
+        // apply payouts in a single operation for efficiency
+        if (totalPayout > 0) await economyManager.addCoins(id, totalPayout)
+        if (totalPayout > 0) await economyManager.addDailyAmount(id, Math.max(0, totalPayout - totalStake))
 
-          //User cancels game ---
-          if (res.result == "CANCEL") {
-            await economyManager.removeCoins(id, einsatz)
-            await interaction.followUp({
-              embeds: [
-                new EmbedBuilder()
-                  .setTitle(`\`\`\`🤴 ${await t("minigames.blackjack_label")} 🤴\`\`\``)
-                  .setDescription(`\`\`\`${await t("minigames_events.blackjack_cancel_text")}\`\`\``)
-                  .setColor(accentColor ? accentColor : 0xe6b04d)
-              ],
-              components: [
-                new ActionRowBuilder().addComponents(
-                  new ButtonBuilder()
-                    .setStyle("Danger")
-                    .setCustomId("blackjack")
-                    .setLabel(`🔁 ${await t("minigames.replay_label")}`)
-                )
-              ],
-              ephemeral: true
-            });
-            //Logging
-            await logManager.logString(`${tag} lost ${einsatz} by cancelling his minigame.`)
-            return;
-          }
+        // Build reply summary
+        const net = totalPayout - totalStake
+        const title = net > 0 ? (await t('minigames.result_win')) || 'You won' : (net < 0 ? (await t('minigames.result_loss')) || 'You lost' : (await t('minigames.result_cancel')) || 'Push'
+        )
 
-          //User wins --
-          if (res.result == "WIN") {
-            let gewinn = einsatz * 1.5;
-            //Remove and Add Coins to User
-            await economyManager.removeCoins(id, einsatz)
-            await economyManager.addCoins(id, gewinn)
-            await economyManager.addDailyAmount(id, gewinn)
-
-            await interaction.followUp({
-              embeds: [
-                new EmbedBuilder()
-                  .setTitle(`\`\`\`🤴 ${await t("minigames.blackjack_label")} 🤴\`\`\``)
-                  .setDescription(`\`\`\`${await t("minigames_events.blackjack_won_text")} ${await t("minigames_events.blackjack_won_text_two")} ${gewinn}\n${await t("minigames_events.blackjack_win_text_three")} ${await economyManager.getUserDaily(id)} ${await t("minigames_events.blackjack_win_text_four")}\`\`\``)
-                  .setColor(accentColor ? accentColor : 0xe6b04d)
-              ],
-              components: [
-                new ActionRowBuilder().addComponents(
-                  new ButtonBuilder()
-                    .setStyle("Danger")
-                    .setCustomId("blackjack")
-                    .setLabel(`🔁 ${await t("minigames.replay_label")}`)
-                )
-              ],
-              ephemeral: true
-            });
-            //Logging
-            await logManager.logString(`${tag} won ${gewinn} Coins by playing a minigame with a use of ${einsatz} Coins`)
-            return;
-          }
-        })
-
-
-        // Fehler tritt auf --
-        .catch(async (res) => {
-          await interaction.followUp({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-                .setDescription(`\`\`\`${await t("minigames_events.blackjack_error_text")}\`\`\``)
-                .setColor(accentColor ? accentColor : 0xe6b04d)
-            ],
-            ephemeral: true
-          });
-          //Logging
-          await logManager.logString(`${tag}'s Blackjack Game resulted in an error: ${res}`)
-          return;
+        await interaction.followUp({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle(`${net > 0 ? '🏆' : net < 0 ? '💀' : '⚪'} ${(await t("minigames.blackjack_label")) || 'Blackjack'} — ${title}`)
+              .setColor(accentColor ? accentColor : (net > 0 ? 0x1f8b4c : 0x8b1c1c))
+              .addFields(
+                { name: (await t('minigames.your_bet')) || 'Your bet', value: `${einsatz}`, inline: true },
+                { name: (await t('minigames.won_amount')) || 'Won amount', value: `${Math.max(0, totalPayout - totalStake)}`, inline: true },
+                { name: (await t('minigames.loss_amount')) || 'Loss amount', value: `${Math.max(0, totalStake - totalPayout)}`, inline: true },
+              )
+              .setFooter({ text: `${(await t('minigames.daily_total')) || 'Daily total'}: ${await economyManager.getUserDaily(id)}` })
+              .setTimestamp()
+          ],
+          components: [
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setStyle('Primary')
+                .setCustomId('blackjack')
+                .setLabel(`🔁 ${await t("minigames.replay_label")}`)
+            )
+          ],
+          ephemeral: true
         });
+        // Logging
+        await logManager.logString(`${tag} settled blackjack: stake=${totalStake} payout=${totalPayout} net=${net}`)
+        return;
+      } catch (err) {
+        await interaction.followUp({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle(`⛔ ${(await t("errors.error_label")) || 'Error'} — ${(await t('minigames.result_error')) || 'Game error'}`)
+              .setColor(accentColor ? accentColor : 0x8b1c1c)
+              .setDescription((await t("minigames_events.blackjack_error_text")) || 'An error occurred in this blackjack game!')
+              .setFooter({ text: `${(await t('minigames.help_contact')) || 'Contact an admin if this persists'}` })
+              .setTimestamp()
+          ],
+          ephemeral: true
+        });
+        // Logging
+        await logManager.logString(`${tag}'s Blackjack Game resulted in an error: ${err}`)
+        return;
+      }
     });
   },
 };
