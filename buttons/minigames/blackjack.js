@@ -94,9 +94,10 @@ module.exports = {
         // determine multipliers (array) and outcomes (array)
         const multipliersArr = multipliers.length ? multipliers : outcomes.map(() => 1)
 
-  // charge extra stakes for splits/doubles (we already removed base bet)
-  // multipliersArr contains 1 or 2 per hand; if a hand was doubled we need to charge an extra base bet for it
-  const extraCharges = multipliersArr.reduce((acc, m) => acc + (m - 1) * einsatz, 0) + Math.max(0, multipliersArr.length - 1) * 0 // splits already accounted by separate hands, base bet removed once
+  // charge extra stakes for splits and doubles (we already removed the base bet once)
+  // - For each additional hand created by a split we must charge one extra base bet.
+  // - For each doubled hand we must charge an extra base bet (multiplier - 1).
+  const extraCharges = multipliersArr.reduce((acc, m) => acc + (m - 1) * einsatz, 0) + Math.max(0, multipliersArr.length - 1) * einsatz
         if (extraCharges > 0) await economyManager.removeCoins(id, extraCharges)
 
         // compute payouts
@@ -133,20 +134,19 @@ module.exports = {
 
         // Build reply summary
         const net = totalPayout - totalStake
-        const title = net > 0 ? (await t('minigames.result_win')) || 'You won' : (net < 0 ? (await t('minigames.result_loss')) || 'You lost' : (await t('minigames.result_cancel')) || 'Push'
-        )
+        const title = net > 0 ? (await t('minigames.result_win')) : (net < 0 ? (await t('minigames.result_loss')) : (await t('minigames.result_cancel')))
 
         await interaction.followUp({
           embeds: [
             new EmbedBuilder()
-              .setTitle(`${net > 0 ? '🏆' : net < 0 ? '💀' : '⚪'} ${(await t("minigames.blackjack_label")) || 'Blackjack'} — ${title}`)
+              .setTitle(`${net > 0 ? '🏆' : net < 0 ? '💀' : '⚪'} ${(await t("minigames.blackjack_label"))} — ${title}`)
               .setColor(accentColor ? accentColor : (net > 0 ? 0x1f8b4c : 0x8b1c1c))
               .addFields(
-                { name: (await t('minigames.your_bet')) || 'Your bet', value: `${einsatz}`, inline: true },
-                { name: (await t('minigames.won_amount')) || 'Won amount', value: `${Math.max(0, totalPayout - totalStake)}`, inline: true },
-                { name: (await t('minigames.loss_amount')) || 'Loss amount', value: `${Math.max(0, totalStake - totalPayout)}`, inline: true },
+                { name: (await t('minigames.your_bet')), value: `${einsatz}`, inline: true },
+                { name: (await t('minigames.won_amount')), value: `${Math.max(0, totalPayout - totalStake)}`, inline: true },
+                { name: (await t('minigames.loss_amount')), value: `${Math.max(0, totalStake - totalPayout)}`, inline: true },
               )
-              .setFooter({ text: `${(await t('minigames.daily_total')) || 'Daily total'}: ${await economyManager.getUserDaily(id)}` })
+              .setFooter({ text: `${(await t('minigames.daily_total'))}: ${await economyManager.getUserDaily(id)}` })
               .setTimestamp()
           ],
           components: [
@@ -166,10 +166,10 @@ module.exports = {
         await interaction.followUp({
           embeds: [
             new EmbedBuilder()
-              .setTitle(`⛔ ${(await t("errors.error_label")) || 'Error'} — ${(await t('minigames.result_error')) || 'Game error'}`)
+              .setTitle(`⛔ ${(await t("errors.error_label"))} — ${(await t('minigames.result_error'))}`)
               .setColor(accentColor ? accentColor : 0x8b1c1c)
-              .setDescription((await t("minigames_events.blackjack_error_text")) || 'An error occurred in this blackjack game!')
-              .setFooter({ text: `${(await t('minigames.help_contact')) || 'Contact an admin if this persists'}` })
+              .setDescription((await t("minigames_events.blackjack_error_text")))
+              .setFooter({ text: `${(await t('minigames.help_contact'))}` })
               .setTimestamp()
           ],
           ephemeral: true
