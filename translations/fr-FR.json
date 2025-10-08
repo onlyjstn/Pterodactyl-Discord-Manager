@@ -300,5 +300,17 @@
   	"counting.wrong_number_text": "a posté un mauvais nombre !",
  	"counting.wrong_number_footer": "Le jeu a été réinitialisé.",
  	"counting.expected_label": "Attendu",
- 	"counting.given_label": "Donné"
+ 	"counting.given_label": "Donné",
+	"counting.counting_channel_start_int": "Mode de comptage",
+  	"counting.counting_channel_start_int_text": "Le mode est : `INTEGER`\nLe départ est à : `0`\nLe nombre suivant attendu serait : `1`",
+	"counting.wrong_user_title": "Utilisateur incorrect",
+  	"counting.wrong_user_text": " a essayé de compter deux nombres à la suite.\n> Chaque utilisateur ne peut compter qu'un nombre à la fois !",
+	"counting.new_mode_title": "Nouveau mode de comptage",
+  	"counting.new_mode_footer": "Amusez-vous bien !",
+  	"counting.mode_names.integer": "ENTIER",
+  	"counting.mode_names.binary": "BINAIRE",
+  	"counting.mode_names.hexadecimal": "HEXADECIMAL",
+  	"counting.mode_descriptions.integer": "Comptage normal : 1, 2, 3 …",
+  	"counting.mode_descriptions.binary": "Comptage en binaire : 1, 10, 11, 100 …",
+  	"counting.mode_descriptions.hexadecimal": "Comptage en hexadécimal : 1, 2, …, A, B, C …"
 }

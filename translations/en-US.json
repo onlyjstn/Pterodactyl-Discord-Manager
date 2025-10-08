@@ -301,5 +301,17 @@
   	"counting.wrong_number_text": "posted a wrong number!",
   	"counting.wrong_number_footer": "The game has been reset.",
   	"counting.expected_label": "Expected",
-  	"counting.given_label": "Given"
+  	"counting.given_label": "Given",
+	"counting.counting_channel_start_int": "Counting mode",
+  	"counting.counting_channel_start_int_text": "The mode is: `INTEGER`\nStart is at: `0`\nNext expected number would be: `1`",
+	"counting.wrong_user_title": "Wrong User",
+  	"counting.wrong_user_text": " tried to count two numbers in a row.\n> Each user can only count one number at a time!",
+	"counting.new_mode_title": "New Counting Mode",
+  	"counting.new_mode_footer": "Have fun counting!",
+  	"counting.mode_names.integer": "INTEGER",
+  	"counting.mode_names.binary": "BINARY",
+  	"counting.mode_names.hexadecimal": "HEXADECIMAL",
+  	"counting.mode_descriptions.integer": "Counting normally: 1, 2, 3 …",
+  	"counting.mode_descriptions.binary": "Counting in binary: 1, 10, 11, 100 …",
+  	"counting.mode_descriptions.hexadecimal": "Counting in hexadecimal: 1, 2, …, A, B, C …"
 }

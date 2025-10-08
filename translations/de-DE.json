@@ -302,5 +302,15 @@
   	"counting.expected_label": "Erwartet",
   	"counting.given_label": "Gegeben",
 	"counting.counting_channel_start_int": "Zählmodus",
-	"counting.counting_channel_start_int_text": "Der Modus ist: `INTEGER`\nStart ist bei `0`\nNächste erwartete Zahl wäre:`1`"
+	"counting.counting_channel_start_int_text": "Der Modus ist: `INTEGER`\nStart ist bei: `0`\nNächste erwartete Zahl wäre:`1`",
+	"counting.wrong_user_title": "Falscher User",
+	"counting.wrong_user_text": " hat vesucht 2 Zahlen hintereinander zu zählen.\n> Jeder User darf immer nur eine Zahl hochzählen!",
+	"counting.new_mode_title": "Neuer Zählmodus",
+  	"counting.new_mode_footer": "Viel Spaß beim Zählen!",
+  	"counting.mode_names.integer": "INTEGER",
+ 	"counting.mode_names.binary": "BINÄR",
+ 	"counting.mode_names.hexadecimal": "HEXADECIMAL",
+ 	"counting.mode_descriptions.integer": "Es wird normal gezählt: 1, 2, 3 …",
+ 	"counting.mode_descriptions.binary": "Es wird in Binär gezählt: 1, 10, 11, 100 …",
+	"counting.mode_descriptions.hexadecimal": "Es wird in Hexadezimal gezählt: 1, 2, …, A, B, C …"
 }
