@@ -293,5 +293,14 @@
 	"counting.counting_channel": "Setze Channel",
 	"counting.counting_channel_set": "Channel für das Counting-System gesetzt auf:",
 	"counting.incorrect_channel": "Inkorrekter Channeltyp",
-	"counting.incorrect_channel_text": "Der ausgewählte Channel ist nicht textbasiert.\nBitte wähle einen textbasierten Channel aus!"
+	"counting.incorrect_channel_text": "Der ausgewählte Channel ist nicht textbasiert.\nBitte wähle einen textbasierten Channel aus!",
+	"counting.counting_channel_start": "Willkommen im Zähl-Channel",
+	"counting.counting_channel_start_text": "Dieser Channel wird ab jetzt als Zähl-Channel verwendet.",
+	"counting.wrong_number_title": "Falsche Zahl!",
+  	"counting.wrong_number_text": "hat eine falsche Zahl gepostet!",
+  	"counting.wrong_number_footer": "Das Spiel wurde zurückgesetzt.",
+  	"counting.expected_label": "Erwartet",
+  	"counting.given_label": "Gegeben",
+	"counting.counting_channel_start_int": "Zählmodus",
+	"counting.counting_channel_start_int_text": "Der Modus ist: `INTEGER`\nStart ist bei `0`\nNächste erwartete Zahl wäre:`1`"
 }

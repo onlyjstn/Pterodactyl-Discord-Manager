@@ -49,7 +49,7 @@ module.exports = {
         return;
     }
 
-    databaseInterface.setObject("countingChannel", channel)
+    databaseInterface.setObject("countingChannel", channel.id)
 
     await interaction.editReply({
         embeds: [
@@ -63,11 +63,20 @@ module.exports = {
 
     const start_embed = new EmbedBuilder()
         .setTitle(`\`\`\`${await t("counting.counting_channel_start")}\`\`\``)
-        .setDescription(`${await t("counting.counting_channel_start_text")}: <#${channel.id}>`)
+        .setDescription(`${await t("counting.counting_channel_start_text")}`)
         .setColor(accentColor ? accentColor : 0xe6b04d)
     
 
     await channel.send({ embeds: [start_embed] })
+
+    const start_embed_int = new EmbedBuilder()
+        .setTitle(`\`\`\`${await t("counting.counting_channel_start_int")}\`\`\``)
+        .setDescription(`${await t("counting.counting_channel_start_int_text")}`)
+        .setColor(accentColor ? accentColor : 0xe6b04d)
+    
+
+    await channel.send({ embeds: [start_embed_int] })
+
 
     await logManager.logString("Channel for the Counting System has been set to " + channel.name + " with ID: " + channel.id + " by " + user.globalName + " with ID: " + user.id)
   },

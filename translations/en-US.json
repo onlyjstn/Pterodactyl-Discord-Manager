@@ -294,5 +294,12 @@
 	"counting.counting_channel": "Set Channel",
 	"counting.counting_channel_set": "Channel for the counting system set to:",
 	"counting.incorrect_channel": "Incorrect channel type",
-	"counting.incorrect_channel_text": "The selected channel is not text-based.\nPlease select a text-based channel!"
+	"counting.incorrect_channel_text": "The selected channel is not text-based.\nPlease select a text-based channel!",
+	"counting.counting_channel_start": "Welcome to the counting channel",
+  	"counting.counting_channel_start_text": "This channel will now be used as the counting channel.",
+	"counting.wrong_number_title": "Wrong Number!",
+  	"counting.wrong_number_text": "posted a wrong number!",
+  	"counting.wrong_number_footer": "The game has been reset.",
+  	"counting.expected_label": "Expected",
+  	"counting.given_label": "Given"
 }

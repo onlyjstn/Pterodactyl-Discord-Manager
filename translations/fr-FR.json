@@ -293,5 +293,12 @@
 	"counting.counting_channel": "Définir le salon",
 	"counting.counting_channel_set": "Salon pour le système de comptage défini sur :",
 	"counting.incorrect_channel": "Type de salon incorrect",
-	"counting.incorrect_channel_text": "Le salon sélectionné n’est pas un salon textuel.\nVeuillez choisir un salon textuel !"
+	"counting.incorrect_channel_text": "Le salon sélectionné n’est pas un salon textuel.\nVeuillez choisir un salon textuel !",
+	"counting.counting_channel_start": "Bienvenue dans le salon de comptage",
+  	"counting.counting_channel_start_text": "Ce salon sera désormais utilisé comme salon de comptage.",
+	"counting.wrong_number_title": "Mauvais Nombre !",
+  	"counting.wrong_number_text": "a posté un mauvais nombre !",
+ 	"counting.wrong_number_footer": "Le jeu a été réinitialisé.",
+ 	"counting.expected_label": "Attendu",
+ 	"counting.given_label": "Donné"
 }
