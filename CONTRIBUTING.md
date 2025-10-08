@@ -1,6 +1,6 @@
 # How can I contribute?
 
-Download .zip.
-Edit Code.
-Create Pull Request.
-Done.
+Fork
+Change Stuff
+Create PR
+Wait for Merge
