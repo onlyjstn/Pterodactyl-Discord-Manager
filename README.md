@@ -1,54 +1,116 @@
+# Pterodactyl Discord Manager
 
-<h1>Pterodactyl Discord Manager</h1>
+## Overview
 
-# What does this Bot do?
-This Bot is used to interact with the Pterodactyl Panel API and let the Users create and manage Servers and Accounts on their own. It also includes a Currency System with a Server-Shop, a Minigame System in order to earn Coins, a Server Manager, a Server Runtime System, a Shop Manager for Admins, a Coin-Leaderboard, Voice Channels to earn Coins in. Furthermore the Bot currently supports 3 languages ( german, english, french ) which the user can select via a /language command.
+The **Pterodactyl Discord Manager** is a Discord bot that integrates with the **Pterodactyl Panel API**, allowing users to **create and manage their own servers and accounts** directly from Discord.  
 
-# Where are the Bot Files / Where can I download them?
-Pull the Files / Download the Files and go ham.
+It includes the following features:
+- **Virtual currency system** with a customizable server shop  
+- **Mini-games** to earn coins  
+- **Server management and runtime control system**  
+- **Shop management tools** for administrators  
+- **Coin leaderboard**  
+- **Voice activity rewards** (earn coins by being active in voice channels)  
+
+Currently supports **three languages**:  
+**German (de-DE)**, **English (en-US)**, and **French (fr-FR)** — selectable via the `/language` command.
+
+---
+
+## Download
+
+Clone or download this repository to get started:
+
+```bash
+git clone https://github.com/your-repo-name.git
+```
+
+---
 
 ## Installation
 
-1: Create a file called `config.env` 
+1. **Create a configuration file** named `config.env`.
 
-2: Fill the file with the following template:
+2. **Copy the following template** into the file and fill it out according to your setup:
 
-```
+```env
 BOT_TOKEN=""
 BOT_CLIENT_ID=""
-#Server ID of the Server this Bot is going to be on. This is in order to prevent People from Collecting Coins on Servers other than yours.
+# Server ID to restrict coin earning to one specific Discord server.
 BOT_SINGLE_SERVER_ID=""
+
 PTERODACTYL_API_KEY=""
 PTERODACTYL_ACCOUNT_API_KEY=""
-#URL OF THE PANEL FA https://panel.test.de
+# URL of your Pterodactyl panel (e.g. https://panel.example.com)
 PTERODACTYL_API_URL=""
-#Amount of Days the Bot waits before deleting a suspended Server which ran out of runtime
+
+# Number of days before suspended servers are deleted.
 DELETION_OFFSET=2
-#Multiplication factor by which the original server price is to be multiplied in the case of a term extension. Can be in the range of 0-1 for a discount or in the range above 1 for an increase at renewal.
+
+# Price adjustment factor for server renewals.
+# Use 0–1 for a discount or >1 for a price increase.
 PRICE_OFFSET=0.75
-#Discord User IDs of everyone who should be able to remove / add Coins to Users; Control the Shop( seperated by "," )
-ADMIN_LIST= [  ]
-#Default Language - Select from "en-US" "de-DE" "fr-FR"
-DEFAULT_LANGUAGE = "en-US"
-#Express Port
-PORT = "53134"
-#OAuth2 Secret
-SECRET = ""
-#Partner-Stuff und Partner Channel DO NOT FILL OUT THE FOLLOWING 2! THESE ARE ONLY FOR TESTING PURPOSES
-PARTNER_CHANNEL = ""
-PARTNER_TEXT = ""
+
+# Discord user IDs allowed to manage coins and the shop (comma-separated list).
+ADMIN_LIST=[]
+
+# Default language ("en-US", "de-DE", or "fr-FR").
+DEFAULT_LANGUAGE="en-US"
+
+# Express server port
+PORT="53134"
+
+# OAuth2 secret
+SECRET=""
+
+# Partner configuration (for internal testing only)
+PARTNER_CHANNEL=""
+PARTNER_TEXT=""
 ```
 
-3: Modify the file accordingly
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-4: `npm i` -> Install all Dependencies
+4. **Start the bot:**
+   ```bash
+   node bot.js
+   ```
 
-5: `node bot.js` -> Start the Bot
+---
 
-I cannot guarantee that the Bot will work in any way. Discord.js Updates may break it at any time. Then you will have to wait for me to update it.
-For Questions either open a Github Issue or Message me on Discord ```Einkornwolf#1506```
+## Notes
 
-# Copyright
+- This bot is provided **as-is**, without any warranty or guarantee.  
+- **Discord.js updates** may break functionality at any time.  
+  If that happens, you may need to wait for an update or patch it yourself.  
+- For questions or support:
+  - Open a **GitHub issue**, or  
+  - Contact me on Discord: **Einkornwolf**
 
-Feel free to use or update the code as you wish. If you want you can text me on Discord if you want to do something with it :) Would be pretty cool.
+---
 
+## License
+
+This project is licensed under the  
+**Custom Non-Commercial Copyleft License (CNCCL)**.  
+
+### Key Terms:
+- **Private and non-commercial use** is permitted.  
+- **Modification and redistribution** are allowed **only under the same license**.  
+- **All changes or derivative works** must also be **publicly released**.  
+- **Commercial use** of any kind is **strictly prohibited**.  
+- **Copyright and license notices must remain intact** in all files.  
+- The software is provided **without warranty or liability** of any kind.
+
+See the [LICENSE](./LICENSE) file for full license text.
+
+---
+
+## Copyright
+
+© 2025 Finn Wolf 
+All rights reserved under the terms of the **Custom Non-Commercial Copyleft License (CNCCL)**.  
+
+If you plan to build on this project, feel free to reach out — I’m always interested in seeing what others create with it.
