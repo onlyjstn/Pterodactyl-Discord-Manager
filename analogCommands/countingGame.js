@@ -28,8 +28,12 @@ let pickMode = async function(channel, t) {
   const footer = await t("counting.new_mode_footer");        
 
   const newModeEmbed = new EmbedBuilder()
-    .setTitle(`${title}: ${modeName}`)
-    .setDescription(descriptionTemplate)
+    .setTitle(`🔁 ${title}: ${modeName}`)
+    .setDescription(`➡️ ${descriptionTemplate}`)
+    .addFields(
+      { name: '🔹 Modus', value: `${modeName}`, inline: true },
+      { name: '📝 Kurzinfo', value: `${descriptionTemplate}`, inline: false }
+    )
     .setColor(0x00AE86)
     .setFooter({ text: footer })
     .setTimestamp();
@@ -51,11 +55,11 @@ let sendFailureEmbed = async function(givenText, channel, t) {
   }
 
   const failEmbed = new EmbedBuilder()
-    .setTitle(`❌ ${await t("counting.wrong_number_title")}`)
-    .setDescription(
-      `> <@${userId}> ${await t("counting.wrong_number_text")}\n\n` +
-      `**${await t("counting.expected_label")}:** \`${expectedValue}\`\n` +
-      `**${await t("counting.given_label")}:** \`${givenText}\``
+    .setTitle(`🚫 ${await t("counting.wrong_number_title")}`)
+    .setDescription(`> <@${userId}> ${await t("counting.wrong_number_text")}`)
+    .addFields(
+      { name: `➡️ ${await t("counting.expected_label")}`, value: `\`${expectedValue}\``, inline: true },
+      { name: `➡️ ${await t("counting.given_label")}`, value: `\`${givenText}\``, inline: true }
     )
     .setColor(0xE74C3C)
     .setFooter({ text: await t("counting.wrong_number_footer") })
@@ -67,10 +71,8 @@ let sendFailureEmbed = async function(givenText, channel, t) {
 //Method for sending the Embed when the same User typed two Numbers in a row
 let sendUserFailureEmbed = async function(givenText, channel, t) {
   const failEmbed = new EmbedBuilder()
-    .setTitle(`❌ ${await t("counting.wrong_user_title")}`)
-    .setDescription(
-      `> <@${userId}> ${await t("counting.wrong_user_text")}\n\n`
-    )
+    .setTitle(`🚫 ${await t("counting.wrong_user_title")}`)
+    .setDescription(`> <@${userId}> ${await t("counting.wrong_user_text")}`)
     .setColor(0xE74C3C)
     .setFooter({ text: await t("counting.wrong_number_footer") })
     .setTimestamp();

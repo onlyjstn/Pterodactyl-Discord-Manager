@@ -1,4 +1,4 @@
-let { generate } = require("generate-password");
+let { generatePassword } = require("./passwordGenerator");
 const { glob } = require("glob");
 
 
@@ -10,7 +10,7 @@ class UtilityCollection {
     constructor() {
         //Generate Password
         this.generatePassword = async function (length) {
-            return generate({ length: length, numbers: true})
+            return generatePassword(length)
         }
 
         //Get random Integer

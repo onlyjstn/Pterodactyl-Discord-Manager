@@ -8,8 +8,8 @@
     "discord-oauth2": "^2.12.1",
     "discord.js": "^14.22.1",
     "dotenv": "^17.2.3",
+    "emoji-regex": "^10.2.1",
     "express": "^5.1.0",
-    "generate-password": "^1.7.1",
     "glob": "^11.0.3",
     "quick.db": "^9.1.7"
   }
