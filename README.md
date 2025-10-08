@@ -22,7 +22,7 @@ Currently supports **three languages**:
 Clone or download this repository to get started:
 
 ```bash
-git clone https://github.com/your-repo-name.git
+git clone https://github.com/Einkornwolf/Pterodactyl-Discord-Manager.git
 ```
 
 ---
