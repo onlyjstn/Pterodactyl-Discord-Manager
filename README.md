@@ -10,7 +10,9 @@ Pull the Files / Download the Files and go ham.
 ## Installation
 
 1: Create a file called `config.env` 
+
 2: Fill the file with the following template:
+
 ```
 BOT_TOKEN=""
 BOT_CLIENT_ID=""
@@ -36,8 +38,11 @@ SECRET = ""
 PARTNER_CHANNEL = ""
 PARTNER_TEXT = ""
 ```
+
 3: Modify the file accordingly
+
 4: `npm i` -> Install all Dependencies
+
 5: `node bot.js` -> Start the Bot
 
 I cannot guarantee that the Bot will work in any way. Discord.js Updates may break it at any time. Then you will have to wait for me to update it.
