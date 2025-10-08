@@ -10,6 +10,7 @@ Pull the Files / Download the Files and go ham.
 ## Installation
 
 `npm i` -> Install all Dependencies
+
 `node bot.js` -> Start the Bot
 
 I cannot guarantee that the Bot will work in any way. Discord.js Updates may break it at any time. Then you will have to wait for me to update it.
