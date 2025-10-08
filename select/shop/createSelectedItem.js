@@ -6,7 +6,9 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
+const { EmojiManager } = require("../../classes/emojiManager")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
+const dotenv = require('dotenv');
 
 module.exports = {
   customId: "createSelectedItem",
@@ -21,9 +23,18 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t 
+   * @param {EmojiManager} emojiManager
    * @returns
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
+    // dotenv + guild icon (Footer)
+    console.log(emojiManager)
+    dotenv.config({
+      path: './config.env'
+    })
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
+
     // Normalize input values and load shop data
     const { user: { id: userId, tag }, values, user } = interaction;
     const shopItems = await databaseInterface.getObject("shop_items_servers");
@@ -31,13 +42,15 @@ module.exports = {
     const selectedValue = Array.isArray(values) ? values[0] : values;
     const itemIndex = parseInt(selectedValue, 10);
     if (!shopItems || !Array.isArray(shopItems) || shopItems.length === 0) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("shop_select.no_shop_items") || "Shop is empty."}\`\`\``)
-            .setColor(0xe6b04d),
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.no_shop_items")}**`)
+            .setColor(0xe6b04d)
+            .setTimestamp()
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }),
         ],
         flags: MessageFlags.Ephemeral,
       });
@@ -45,13 +58,15 @@ module.exports = {
       return;
     }
     if (isNaN(itemIndex) || itemIndex < 0 || itemIndex >= shopItems.length) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("shop_select.invalid_selection") || "Invalid shop selection."}\`\`\``)
-            .setColor(0xe6b04d),
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.invalid_selection")}**`)
+            .setColor(0xe6b04d)
+            .setTimestamp()
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }),
         ],
         flags: MessageFlags.Ephemeral,
       });
@@ -62,13 +77,15 @@ module.exports = {
     const userBalance = await economyManager.getUserBalance(userId);
     const item = shopItems[itemIndex];
     if (!item || !item.data) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral });
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("shop_select.configuration") || "Selected shop item is not configured correctly."}\`\`\``)
-            .setColor(0xe6b04d),
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.configuration")}**`)
+            .setColor(0xe6b04d)
+            .setTimestamp()
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }),
         ],
         flags: MessageFlags.Ephemeral,
       });
@@ -86,31 +103,35 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("shop.no_account_text") || "No account/email associated with your user."}\`\`\``)
-            .setColor(accentColor ? accentColor : 0xe6b04d),
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop.no_account_text")}**`)
+            .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setTimestamp()
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }),
         ],
         flags: MessageFlags.Ephemeral,
       });
       await logManager.logString(`${tag} tried to buy but no email (panel account) registered.`);
       return;
     }
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
     //Check if item is configured correctly
-      //Get Nests
-      let nestData = await panel.getNestData();
-      //Get chosen Egg Data
-      let chosenNestData = nestData.find(nest => nest.attributes.relationships.eggs.data.some(egg => egg.attributes.id == egg_id))
+    //Get Nests
+    let nestData = await panel.getNestData();
+    //Get chosen Egg Data
+    let chosenNestData = nestData.find(nest => nest.attributes.relationships.eggs.data.some(egg => egg.attributes.id == egg_id))
 
     console.table(chosenNestData)
-    if(!chosenNestData) {
+    if (!chosenNestData) {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("shop_select.configuration")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.configuration")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setTimestamp()
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
         ],
         flags: MessageFlags.Ephemeral
       });
@@ -122,9 +143,11 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("shop_select.not_enough_coins.text")} ${price} ${await t("shop_select.not_enough_coins.text_two")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.not_enough_coins.text")} ${price} ${await t("shop_select.not_enough_coins.text_two")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setTimestamp()
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
         ],
         flags: MessageFlags.Ephemeral
       });
@@ -164,11 +187,13 @@ module.exports = {
         await interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-              .setDescription(`\`\`\`${await t("shop_select.server_not_created_text")}\`\`\``)
-              .setColor(accentColor ? accentColor : 0xe6b04d),
+              .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+              .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.server_not_created_text")}**`)
+              .setColor(accentColor ? accentColor : 0xe6b04d)
+              .setTimestamp()
+              .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }),
           ],
-            flags: MessageFlags.Ephemeral,
+          flags: MessageFlags.Ephemeral,
         });
         await logManager.logString(`${tag}'s shop item / server creation caused an error: ${e.stack || e.message}`);
         return;
@@ -179,9 +204,11 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("shop_select.server_not_created_text")}\`\`\``)
-            .setColor(accentColor ? accentColor : 0xe6b04d),
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.server_not_created_text")}**`)
+            .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setTimestamp()
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }),
         ],
         flags: MessageFlags.Ephemeral,
       });
@@ -195,11 +222,13 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("shop_select.server_not_created_text")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.server_not_created_text")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setTimestamp()
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
         ],
-          flags: MessageFlags.Ephemeral,
+        flags: MessageFlags.Ephemeral,
       });
       //Logging
       await logManager.logString(`${tag}'s shop item / server creation caused an error.`)
@@ -211,16 +240,18 @@ module.exports = {
 
     //Add Server to runtime list
     console.warn(runtime)
-    if(runtime) {
-    await panel.setServerRuntime(uuid, runtime, userId, price)
+    if (runtime) {
+      await panel.setServerRuntime(uuid, runtime, userId, price)
     }
 
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
-          .setTitle(`\`\`\`🛒 ${await t("shop_select.shop_main_label")} 🛒\`\`\``)
-          .setDescription(`\`\`\`${await t("shop_select.server_created_text")}\`\`\``)
+          .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("shop_select.shop_main_label")}`)
+          .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_select.server_created_text")}**`)
           .setColor(accentColor ? accentColor : 0xe6b04d)
+          .setTimestamp()
+          .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
       ],
       flags: MessageFlags.Ephemeral
     });

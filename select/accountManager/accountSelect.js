@@ -6,6 +6,7 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
+const { EmojiManager } = require("../../classes/emojiManager")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require("discord.js")
 
 module.exports = {
@@ -23,36 +24,37 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t 
+   * @param {EmojiManager} emojiManager
    * @returns
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     let { user, values } = interaction
 
     //User selected Create User
     if (values == "createAccount") {
       let selectOption = client.selectMenus.get("createAccount")
-      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t)
+      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager)
     }
 
 
     //User selected Delete User
     if (values == "deleteAccount") {
       let selectOption = client.selectMenus.get("deleteAccount")
-      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t)
+      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager)
     }
 
 
     //User selected reset Password -----------
     if (values == "resetPassword") {
       let selectOption = client.selectMenus.get("resetPassword")
-      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t)
+      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager)
     }
 
 
     //User selected claim Booster Rewards
     if (values == "claimBoosterReward") {
       let selectOption = client.selectMenus.get("claimBoosterReward")
-      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t)
+      await selectOption.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager)
     }
   }
 }

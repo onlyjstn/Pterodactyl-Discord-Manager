@@ -6,6 +6,8 @@ const { EconomyManager } = require("./../../classes/economyManager")
 const { LogManager } = require("./../../classes/logManager")
 const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
+const { EmojiManager } = require("../../classes/emojiManager")
+const dotenv = require('dotenv');
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
@@ -23,12 +25,20 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t 
+   * @param {EmojiManager} emojiManager
    * @returns
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     let { user: { id: userId, tag }, user } = interaction, shopItems = await databaseInterface.getObject("shop_items_servers"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+
+    const guild = interaction.guild;
+    const serverIconURL = guild.iconURL({ dynamic: true });
+
+    dotenv.config({
+      path: './config.env'
+    })
     //Check if there are more than 24 items currently in the shop
-    if(!shopItems) shopItems = 0
+    if (!shopItems) shopItems = 0
     switch (shopItems.length >= 24) {
       //More than 24 Items
       case true: {
@@ -36,9 +46,14 @@ module.exports = {
         await interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-              .setDescription(`\`\`\`${await t("add_item_button.twentyfour_limit_text")}\`\`\``)
+              .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+              .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("add_item_button.twentyfour_limit_text")}**`)
               .setColor(accentColor ? accentColor : 0xe6b04d)
+              .setTimestamp()
+              .setFooter({
+                text: process.env.FOOTER_TEXT,
+                iconURL: serverIconURL
+              })
           ],
           flags: MessageFlags.Ephemeral
         })

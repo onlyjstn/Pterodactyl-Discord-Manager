@@ -6,6 +6,8 @@ const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
 const { UtilityCollection } = require("../../classes/utilityCollection")
+const { EmojiManager } = require("../../classes/emojiManager")
+const dotenv = require('dotenv');
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
 module.exports = {
@@ -22,12 +24,14 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t 
+   * @param {EmojiManager} emojiManager
    * @returns
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     let { user: { id, tag }, user, values } = interaction, shopItems = await databaseInterface.getObject("shop_items_servers"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
 
-
+    const guild = interaction.guild;
+    const serverIconURL = guild.iconURL({ dynamic: true });
     //Add item to shop
     if (interaction.values == "addShopItem") {
       let selectOption = client.selectMenus.get("addShopItem")
@@ -35,16 +39,24 @@ module.exports = {
       return
     }
 
+    dotenv.config({
+      path: './config.env'
+    })
 
     //Show shop item info
     //Check if shop item still exists
     if (!shopItems[values] || !shopItems[values].data) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+      await interaction.deferReply({ flags: MessageFlags.Ephemeral })
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`✍️ ${await t("shop_manager_delete.main_label")} ✍️\`\`\``)
-            .setDescription(`\`\`\`${await t("shop_manager_select.item_not_found_text")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("shop_manager_delete.main_label")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_manager_select.item_not_found_text")}**`)
+            .setTimestamp()
+            .setFooter({
+              text: process.env.FOOTER_TEXT,
+              iconURL: serverIconURL
+            })
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
         flags: MessageFlags.Ephemeral
@@ -52,7 +64,7 @@ module.exports = {
       return;
     }
 
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
     //Get Data about the shop item
     let nestData = await panel.getNestData(), selectedItem = shopItems[values].data, { name, description, price, server_databases, server_cpu, server_ram, server_disk, server_swap, server_backups, egg_id } = selectedItem
@@ -74,11 +86,28 @@ module.exports = {
 
     await interaction.editReply({
       embeds: [new EmbedBuilder()
-        .setTitle(`\`\`\`${name}\`\`\``)
-        .setDescription(`\`\`\`${description}\`\`\``)
+        .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${name}`)
+        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("shop.description_label")}\n\`\`\`${description}\`\`\``)
         .setColor(accentColor ? accentColor : 0xe6b04d)
-        .addFields({ name: `:1234: ${await t("shop_manager_select.item_number_text")}`, value: `\`\`\`${values}\`\`\``, inline: true, }, { name: `:dollar: ${await t("shop.price_label")}`, value: `\`\`\`js\n${price}\`\`\``, inline: true, }, { name: `:gear: ${await t("serverinfo.egg")}`, value: `\`\`\`js\n${egg_id}\`\`\``, inline: true, }, { name: `:hammer: ${await t("serverinfo.image")}`, value: `\`\`\`js\n${docker_image}\`\`\``, inline: true, }, { name: `:screwdriver: ${await t("serverinfo.startup")}`, value: `\`\`\`js\n${startup}\`\`\``, inline: true, }, { name: `:toolbox: ${await t("shop_manager_select.enviro_text")}`, value: `\`\`\`js\n${JSON.stringify(finalEnvList)}\`\`\``, inline: true, }, { name: `:minidisc: ${await t("shop_manager_select.database_text")}`, value: `\`\`\`js\n${server_databases}\`\`\``, inline: true, }, { name: `:tools: ${await t("serverinfo.cpu")}`, value: `\`\`\`js\n${server_cpu}\`\`\``, inline: true, }, { name: `:film_frames: ${await t("serverinfo.ram")}`, value: `\`\`\`js\n${server_ram}\`\`\``, inline: true, }, { name: `:cd: ${await t("serverinfo.disk")}`, value: `\`\`\`js\n${server_disk}\`\`\``, inline: true, }, { name: `:dvd: ${await t("serverinfo.swap")}`, value: `\`\`\`js\n${server_swap}\`\`\``, inline: true, }, { name: `:calling: ${await t("shop_manager_select.backup_text")}`, value: `\`\`\`js\n${server_backups}\`\`\``, inline: true, })
-        .setTimestamp()],
+        .addFields(
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("shop_manager_select.item_number_text")}`, value: `\`\`\`${values}\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("shop.price_label")}`, value: `\`\`\`js\n${price} Coins\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.egg")}`, value: `\`\`\`js\n${egg_id}\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.image")}`, value: `\`\`\`js\n${docker_image}\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.startup")}`, value: `\`\`\`js\n${startup}\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("shop_manager_select.enviro_text")}`, value: `\`\`\`js\n${JSON.stringify(finalEnvList)}\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("shop_manager_select.database_text")}`, value: `\`\`\`js\n${server_databases}\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.cpu")}`, value: `\`\`\`js\n${server_cpu} %\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.ram")}`, value: `\`\`\`js\n${server_ram} MB\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.disk")}`, value: `\`\`\`js\n${server_disk} MB\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("serverinfo.swap")}`, value: `\`\`\`js\n${server_swap} MB\`\`\``, inline: true },
+          { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("shop_manager_select.backup_text")}`, value: `\`\`\`js\n${server_backups}\`\`\``, inline: true }
+        )
+        .setTimestamp()
+        .setFooter({
+          text: process.env.FOOTER_TEXT,
+          iconURL: serverIconURL
+        })],
       components: [new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setLabel(`${await t("shop_manager_select.delete_button_label")} #${values}`)

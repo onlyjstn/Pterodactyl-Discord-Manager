@@ -7,12 +7,15 @@ const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { TranslationManager } = require("./../classes/translationManager")
 const { GiftCodeManager } = require("./../classes/giftCodeManager")
+const { EmojiManager } = require("./../classes/emojiManager")
+
 const database = new DataBaseInterface()
 const boosterManager = new BoosterManager()
 const cacheManager = new CacheManager()
 const economyManager = new EconomyManager()
 const logManager = new LogManager()
 const giftCodeManager = new GiftCodeManager()
+const emojiManager = new EmojiManager();
 const panel = new PanelManager(process.env.PTERODACTYL_API_URL, process.env.PTERODACTYL_API_KEY, process.env.PTERODACTYL_ACCOUNT_API_KEY)
 const dotenv = require("dotenv");
 dotenv.config({
@@ -41,7 +44,7 @@ module.exports = {
         if (interaction.isCommand()) {
             let command = client.commands.get(interaction.commandName);
             try {
-                await command.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager);
+                await command.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
             } catch (error) {
                 console.error(`Command "${command.customId}" failed: ${error}`)
             }
@@ -57,17 +60,17 @@ module.exports = {
 
             let button = client.buttons.get(interaction.customId);
             try {
-                await button.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager);
+                await button.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
             } catch (error) {
                 console.error(`Button "${button.customId}" failed: ${error}`);
             }
-            // Interaction is Select Menu
-        } else if (interaction.isSelectMenu()) {
+        // Interaction is Select Menu
+        } else if (interaction.isStringSelectMenu()) {
             //Exclude GiftCode Select Menu
             if (["singleUseCodeSelect"].includes(interaction.customId)) return;
             let selectMenu = client.selectMenus.get(interaction.customId);
             try {
-                await selectMenu.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager);
+                await selectMenu.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
             } catch (error) {
                 console.log(`Select Menu "${selectMenu.customId}" failed: ${error}`);
             }
@@ -75,7 +78,7 @@ module.exports = {
         } else if (interaction.isModalSubmit()) {
             let modal = client.modals.get(interaction.customId);
             try {
-            await modal.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager);
+            await modal.execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, database, t, giftCodeManager, emojiManager);
             } catch(error) {
                 console.log(`Modal "${modal.customId}" failed: ${error}`)
             }

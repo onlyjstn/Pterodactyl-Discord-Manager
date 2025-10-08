@@ -8,6 +8,11 @@ const { DataBaseInterface } = require("./../../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 const { CanvasPreset } = require("../../classes/canvasPresets")
+const dotenv = require("dotenv");
+dotenv.config({
+    path: "./config.env",
+});
+const { EmojiManager } = require("../../classes/emojiManager")
 
 module.exports = {
     customId: "createAccount",
@@ -24,16 +29,21 @@ module.exports = {
      * @param {LogManager} logManager 
      * @param {DataBaseInterface} databaseInterface 
      * @param {TranslationManager} t 
+     * @param {EmojiManager} emojiManager
      * @returns
      */
-    async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
+    async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
         let { user: { id, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(id)
+    
+        const guild = interaction.guild;
+        const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
+
         let canvas = new CanvasPreset(user)
 
         const accountCreationModal = new ModalBuilder()
             .setCustomId("creationModal")
             .setTitle(`${await t("account_manager_modal.main_label")}`);
-        // Add components to modal
+       
         const user_e_mail = new TextInputBuilder()
             .setCustomId("usereMail")
             .setLabel(`${await t("account_manager_modal.email_label")}`)
@@ -49,15 +59,16 @@ module.exports = {
         //Database Check if User exists
         //Check if user already has an account
         if (userData) {
-            let attachment = await canvas.errorCanvas(`⛔ ${await t("errors.error_label")} ⛔`, `${await t("account_manager_modal.already_has_account_text")}`)
             await interaction.reply({
                 embeds: [
                     new EmbedBuilder()
-                    .setColor(accentColor ? accentColor : 0xe6b04d)
-                        .setImage(`attachment://${attachment.name}`),
+                        .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+                        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("account_manager_modal.already_has_account_text")}**`)
+                        .setColor(accentColor ? accentColor : 0xe6b04d)
+                        .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                        .setTimestamp()
                 ],
                 flags: MessageFlags.Ephemeral,
-                files: [attachment],
             });
             //Logging
             await logManager.logString(`${tag} tried to create an account but already had one.`)

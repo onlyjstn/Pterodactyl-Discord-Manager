@@ -6,7 +6,12 @@ const { EconomyManager } = require("../../classes/economyManager")
 const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
 const { UtilityCollection } = require("../../classes/utilityCollection")
+const { EmojiManager } = require("../../classes/emojiManager")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SelectMenuOptionBuilder, MessageFlags } = require("discord.js")
+const dotenv = require("dotenv");
+dotenv.config({
+    path: "./config.env",
+});
 
 module.exports = {
     customId: "addCodeItem",
@@ -22,10 +27,14 @@ module.exports = {
      * @param {LogManager} logManager 
      * @param {DataBaseInterface} databaseInterface 
      * @param {TranslationManager} t 
+     * @param {EmojiManager} emojiManager
      * @returns
      */
-    async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager) {
+    async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
         let { user: { id, tag }, user, values } = interaction, giftCodes = await databaseInterface.getObject("gift_codes_list"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+
+        const guild = interaction.guild;
+        const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
 
         //Check if there are more than 24 gift codes currently created
         if (!giftCodes) giftCodes = 0
@@ -36,9 +45,11 @@ module.exports = {
                 await interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
-                            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-                            .setDescription(`\`\`\`${await t("giftcode_manager.twentyfour_limit_text")}\`\`\``)
+                            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+                            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("giftcode_manager.twentyfour_limit_text")}**`)
                             .setColor(accentColor ? accentColor : 0xe6b04d)
+                            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                            .setTimestamp()
                     ],
                     flags: MessageFlags.Ephemeral
                 })

@@ -313,5 +313,7 @@
   	"counting.mode_names.hexadecimal": "HEXADECIMAL",
   	"counting.mode_descriptions.integer": "Counting normally: 1, 2, 3 …",
   	"counting.mode_descriptions.binary": "Counting in binary: 1, 10, 11, 100 …",
-  	"counting.mode_descriptions.hexadecimal": "Counting in hexadecimal: 1, 2, …, A, B, C …"
+  	"counting.mode_descriptions.hexadecimal": "Counting in hexadecimal: 1, 2, …, A, B, C …",
+	"shop_select.no_shop_items": "The shop is empty",
+	"shop_select.invalid_selection": "Invalid shop selection"
 }

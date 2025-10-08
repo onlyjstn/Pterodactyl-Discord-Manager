@@ -93,7 +93,7 @@ class PanelManager {
     this.resetUserPassword = async function (eMail, passkey) {
       passkey
         ? (this.password = passkey)
-        : (this.password = await new Password().generatePassword(10));
+        : (this.password = await new Password().generatePassword(15));
       this.userAccountData = await this.checkAccount(eMail);
       this.userData = this.userAccountData.attributes;
       let { username, first_name, last_name } = this.userData
