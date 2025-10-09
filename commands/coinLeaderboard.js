@@ -8,6 +8,13 @@ const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require("discord.js")
 
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const { EmojiManager } = require("./../classes/emojiManager")
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("coin-leaderboard")
@@ -24,28 +31,35 @@ module.exports = {
   * @param {LogManager} logManager 
   * @param {DataBaseInterface} databaseInterface 
   * @param {TranslationManager} t
+  * @param {EmojiManager} emojiManager
   * @returns 
   */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: iUser } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser
 
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
+
     //Get all active Users
     let userList = await economyManager.getTopUsers()
+    console.log(userList.length)
     await userList.splice(0, userList.length - 16)
     
     let leaderEmbed = new EmbedBuilder()
-    .setTitle(`\`\`\`📈 ${await t("leaderboard.label")} 📈\`\`\``)
+    .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("leaderboard.label")}`)
     .setColor(accentColor ? accentColor : 0xe6b04d)
     .setDescription(`\`\`\`${await t("leaderboard.text")}\`\`\``)
+    .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+    .setTimestamp()
 
 
-    for(let i = userList.length - 1; i > 0; i--) {
+    for(let i = userList.length - 1; i >= 0; i--) {
         //Get User Data
         leaderEmbed.addFields([
             {
               name: `\u200b`,
-              value: `**#${Math.abs(i - userList.length)}:** __*<@${userList[i] ? userList[i].id : userList[i] ? userList[i].id : await t("leaderboard.free")}>*__\n🪙 **${userList[i].value.balance} Coins**`,
+              value: `${await emojiManager.getEmoji("emoji_arrow_down_right")} **#${Math.abs(i - userList.length)}:** __*<@${userList[i] ? userList[i].id : userList[i] ? userList[i].id : await t("leaderboard.free")}>*__\n${await emojiManager.getEmoji("emoji_creditcard")} **${userList[i].value.balance} Coins**`,
               inline: false,
             }
           ])

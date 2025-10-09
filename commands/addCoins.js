@@ -7,6 +7,13 @@ const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, MessageFlags } = require("discord.js")
 
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const { EmojiManager } = require("./../classes/emojiManager")
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("add-coins")
@@ -29,11 +36,14 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t
+   * @param {EmojiManager} emojiManager
    * @returns 
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: iUser } = interaction, fetchedUser = await iUser.fetch(true), { accentColor } = fetchedUser
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     //Get User to add Coins to
     let user = interaction.options.getUser("user"), amount = interaction.options.getNumber("amount"), receiverData = await databaseInterface.getObject(user.id)
     //Check if User is on the Admin List
@@ -43,9 +53,11 @@ module.exports = {
         await interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle(`\`\`\`⛔ ${await t("errors.no_admin_label")} ⛔\`\`\``)
-              .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
-              .setColor(accentColor ? accentColor : 0xe6b04d)
+                .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.no_admin_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+                .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("errors.no_admin_text")}**`)
+                .setColor(accentColor ? accentColor : 0xe6b04d)
+                .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                .setTimestamp()
             ],
             flags: MessageFlags.Ephemeral,
         });
@@ -60,9 +72,11 @@ module.exports = {
             await interaction.editReply({
               embeds: [
                 new EmbedBuilder()
-                  .setTitle(`\`\`\`⛔ ${await t("coins.no_account_send_label")} ⛔\`\`\``)
-                  .setDescription(`\`\`\`${await t("coins.no_account_send_text")}\`\`\``)
-                  .setColor(accentColor ? accentColor : 0xe6b04d)
+                    .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("coins.no_account_send_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+                    .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("coins.no_account_send_text")}**`)
+                    .setColor(accentColor ? accentColor : 0xe6b04d)
+                    .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                    .setTimestamp()
               ],
               flags: MessageFlags.Ephemeral
             });
@@ -75,9 +89,11 @@ module.exports = {
             await interaction.editReply({
               embeds: [
                 new EmbedBuilder()
-                  .setTitle(`\`\`\`🪙⠀${await t("coins.coin_label")} 🪙\`\`\``)
-                  .setDescription(`\`\`\`${amount} ${await t("coins.admin_add_coins_text")} \ ${user.tag} \ ${await t("coins.admin_add_coins_text_two")}\`\`\``)
+                  .setTitle(`${await emojiManager.getEmoji("emoji_logo")}⠀${await t("coins.coin_label")}`)
+                  .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} \`${amount}\` **${await t("coins.admin_add_coins_text")} <@${user.id}> ${await t("coins.admin_add_coins_text_two")}**`)
                   .setColor(accentColor ? accentColor : 0xe6b04d)
+                  .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                  .setTimestamp()
               ],
               flags: MessageFlags.Ephemeral
             });

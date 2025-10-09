@@ -8,6 +8,13 @@ const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, MessageFlags } = require("discord.js")
 
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const { EmojiManager } = require("./../classes/emojiManager")
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("transfer-coins")
@@ -18,10 +25,10 @@ module.exports = {
     .addIntegerOption((option) =>
       option.setName("amount").setDescription("Amount").setRequired(true)
     )
-    .addStringOption((option) => 
+    .addStringOption((option) =>
       option.setName("message").setDescription("Message").setRequired(false)
     )
-    ,
+  ,
   /**
    * 
    * @param {BaseInteraction} interaction 
@@ -33,11 +40,14 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t
+   * @param {EmojiManager} emojiManager
    * @returns 
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     let empfaenger = interaction.options.getUser("user"), transferAmount = interaction.options.getInteger("amount"), userData = await databaseInterface.getObject(userId), receiverData = await databaseInterface.getObject(empfaenger.id)
     let transferMessage = interaction.options.getString("message")
 
@@ -47,9 +57,11 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("transfer_coins.no_account_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("transfer_coins.no_account_text")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.no_account_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.no_account_text")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
         ],
         flags: MessageFlags.Ephemeral,
       });
@@ -64,9 +76,11 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("transfer_coins.no_account_receiver_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("transfer_coins.no_account_receiver_text")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.no_account_receiver_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.no_account_receiver_text")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
         ],
         flags: MessageFlags.Ephemeral,
       });
@@ -83,9 +97,11 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("transfer_coins.lower_than_zero_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("transfer_coins.lower_than_zero_text")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.lower_than_zero_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.lower_than_zero_text")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
         ],
         flags: MessageFlags.Ephemeral,
       });
@@ -100,9 +116,11 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("transfer_coins.not_enough_coins_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("transfer_coins.not_enough_coins_text")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("transfer_coins.not_enough_coins_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("transfer_coins.not_enough_coins_text")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
         ],
         flags: MessageFlags.Ephemeral,
       });
@@ -129,16 +147,14 @@ module.exports = {
       await empfaenger.send({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`🪙⠀${await eT("transfer_coins.main_label")}  🪙\`\`\``)
-            .setDescription(`\`\`\`${interaction.member.user.username} ${await eT("transfer_coins.dm_receive_text")} ${flooredAmount} Coin|s` + "```")
-            .addFields([
-              {
-                name: `\u200b`,
-                value: `\`\`\`${await eT("transfer_coins.dm_message_label")} ${transferMessage}\`\`\``,
-                inline: false
-              }
-        ])
+            .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await eT("transfer_coins.main_label")}`)
+            .addFields(
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${interaction.member.user.username} ${await eT("transfer_coins.dm_receive_text")}`, value: `\`\`\`js\n$ ${flooredAmount} Coin|s\`\`\`` },
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await eT("transfer_coins.dm_message_label")}`, value: `\`\`\`js\n${transferMessage ? transferMessage : "-"}\`\`\`` }
+            )
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
         ],
       });
     } catch (e) { /*Recipient did not enable DMs*/ }
@@ -146,16 +162,14 @@ module.exports = {
       await interaction.member.user.send({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`🪙⠀${await eT("transfer_coins.main_label")}  🪙\`\`\``)
-            .setDescription(`\`\`\`${flooredAmount} ${await t("transfer_coins.dm_send_text")} ${empfaenger.username}\`\`\``)
-            .addFields([
-              {
-                name: `\u200b`,
-                value: `\`\`\`${await eT("transfer_coins.dm_message_label")} ${transferMessage}\`\`\``,
-                inline: false
-              }
-        ])
+            .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await eT("transfer_coins.main_label")}`)
+            .addFields(
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${flooredAmount} ${await t("transfer_coins.dm_send_text")}`, value: `\`\`\`js\n${empfaenger.username}\`\`\`` },
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await eT("transfer_coins.dm_message_label")}`, value: `\`\`\`js\n${transferMessage ? transferMessage : "-"}\`\`\`` }
+            )
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
         ],
       });
     } catch (e) { /*Sender did not enable DMs*/ }
@@ -165,9 +179,13 @@ module.exports = {
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
-          .setTitle(`\`\`\`🪙⠀${await t("transfer_coins.main_label")}  🪙\`\`\``)
-          .setDescription(`\`\`\`${flooredAmount} ${await t("transfer_coins.success_text")} ${empfaenger.username}` + "```")
+          .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("transfer_coins.main_label")}`)
+          .addFields(
+            { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${flooredAmount} ${await t("transfer_coins.success_text")}`, value: `\`\`\`js\n${empfaenger.username}\`\`\`` }
+          )
           .setColor(accentColor ? accentColor : 0xe6b04d)
+          .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+          .setTimestamp()
       ],
       flags: MessageFlags.Ephemeral,
     });

@@ -21,7 +21,7 @@ class EconomyManager extends DataBaseInterface {
         //Get Users Balance
         this.getUserBalance = async function (userId) {
             this.userData = await this.getObject(userId)
-            if(this.userData == null) return null
+            if (this.userData == null) return null
             return this.userData.balance
         }
 
@@ -29,19 +29,22 @@ class EconomyManager extends DataBaseInterface {
         this.getTotalCoinAmount = async function () {
             this.entireDatabase = await this.fetchAll()
             this.totalCoinAmount = 0
-            for(let object of this.entireDatabase) {
+            for (let object of this.entireDatabase) {
                 let { value: { balance } } = object
-                if(object) if(balance != undefined) this.totalCoinAmount += balance
+                if (object) if (balance != undefined) this.totalCoinAmount += balance
             }
             return this.totalCoinAmount
         }
 
         //Get List of top Users in Reversed Order
-        this.getTopUsers = async function() {
+        this.getTopUsers = async function () {
             this.userDatabase = await this.fetchAll()
-            await this.userDatabase.sort(function (a, b) {if(a.value.balance == undefined) return -Infinity; return a.value.balance - b.value.balance}) 
+            await this.userDatabase.sort(function (a, b) { if (a.value.balance == undefined) return -Infinity; return a.value.balance - b.value.balance })
+            this.userDatabase = this.userDatabase.filter(user => {               // Kein Key = kein gültiger User
+                if (!user.value?.balance) return false;        // Kein Balance-Feld = überspringen          // z. B. falls Key keine Discord-ID ist
+                return true;
+            });
             return this.userDatabase
-
         }
 
         //Add Daily Amount to User
@@ -66,17 +69,17 @@ class EconomyManager extends DataBaseInterface {
         }
 
         //Reset all Dailys
-        this.resetAllDailyAmounts = async function() {
+        this.resetAllDailyAmounts = async function () {
             this.entireDatabase = await this.fetchAll()
-            for(let object of this.entireDatabase) {
+            for (let object of this.entireDatabase) {
                 let { value: { daily }, id } = object
-                if(daily) await this.setDailyAmount(id, 0)
+                if (daily) await this.setDailyAmount(id, 0)
             }
         }
 
 
 
-        
+
     }
 }
 
