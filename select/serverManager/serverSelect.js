@@ -174,26 +174,13 @@ module.exports = {
 
     console.log(serverRuntime)
 
-    //Emoji parser
-    function parseEmoji(raw) {
-      if (!raw) return null;
-      if (typeof raw === "string") {
-        const m = raw.match(/<a?:([^:>]+):(\d+)>/);
-        if (m) return { id: m[2], name: m[1], animated: raw.startsWith("<a:") };
-        return raw; // Unicode
-      } else if (typeof raw === "object" && raw.id) {
-        return { id: raw.id, name: raw.name || undefined, animated: !!raw.animated };
-      }
-      return null;
-    }
-
-    const playEmoji = parseEmoji(await emojiManager.getEmoji("emoji_play")) || "▶️";
-    const stopEmoji = parseEmoji(await emojiManager.getEmoji("emoji_stop")) || "⏹️";
-    const fileEmoji = parseEmoji(await emojiManager.getEmoji("emoji_file")) || "📁";
-    const rotateEmoji = parseEmoji(await emojiManager.getEmoji("emoji_rotate")) || "🔁";
-    const clipboardEmoji = parseEmoji(await emojiManager.getEmoji("emoji_clipboard")) || "📋";
-    const trashEmoji = parseEmoji(await emojiManager.getEmoji("emoji_trash")) || "🗑️";
-    const creditEmoji = parseEmoji(await emojiManager.getEmoji("emoji_creditcard")) || "💳";
+    const playEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_play")) || "▶️";
+    const stopEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_stop")) || "⏹️";
+    const fileEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_file")) || "📁";
+    const rotateEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_rotate")) || "🔁";
+    const clipboardEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_clipboard")) || "📋";
+    const trashEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_trash")) || "🗑️";
+    const creditEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_creditcard")) || "💳";
 
     let serverCommandButtonsRowOne = new ActionRowBuilder().addComponents(
       new ButtonBuilder()

@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const { EconomyManager } = require("../classes/economyManager");
 const { PanelManager } = require("../classes/panelManager");
 const { DataBaseInterface } = require("../classes/dataBaseInterface")
+const { EmojiManager } = require("../classes/emojiManager")
 const fs = require("fs")
 const dotenv = require("dotenv");
 dotenv.config({
@@ -10,6 +11,7 @@ dotenv.config({
 
 const database = new DataBaseInterface()
 const panel = new PanelManager(process.env.PTERODACTYL_API_URL, process.env.PTERODACTYL_API_KEY, process.env.PTERODACTYL_ACCOUNT_API_KEY)
+const emojiManager = new EmojiManager();
 
 module.exports = {
   name: "clientReady",
@@ -34,7 +36,7 @@ module.exports = {
 
     //Runtime Job
     cronJob = client.cronJobs.get("dailyRuntime");
-    await cronJob.execute(client, panel, database);
+    await cronJob.execute(client, panel, database, emojiManager);
 
     //Start express server
     let dashboard = require("../express/server.js")

@@ -8,6 +8,13 @@ const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const { EmojiManager } = require("./../classes/emojiManager")
+
 module.exports = {
   customId: "addShopItemModal",
   /**
@@ -22,11 +29,15 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t 
+   * @param {EmojiManager} emojiManager
    * @returns
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     let { fields, user: { id }, user } = interaction, itemName = fields.getTextInputValue("itemName"), itemPrice = fields.getTextInputValue("itemPrice"), itemDescription = fields.getTextInputValue("itemDescription"), itemRuntime = fields.getTextInputValue("itemRuntime"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, itemType = "server"// maybe in the next api update :("item_type_selector ).data.values[0]
+
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
 
     let data = {
       name: itemName,
@@ -39,16 +50,19 @@ module.exports = {
     //Cache Data
     await cacheManager.cacheData(id, data)
 
+    const confirmEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_confirm")) || "✅";
+    const denyEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_deny")) || "❌";
+
     //Check if item_price is a number
     if (isNaN(itemPrice) || itemPrice < 0 || itemPrice % 1 !== 0) {
       await interaction.editReply({
-  embeds: [
+        embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`✍️ ${await t("shop_manager.main_label")} ✍️\`\`\``)
-            .setDescription(`\`\`\`${await t("add_item_modal_second.price_no_number_text")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("shop_manager.main_label")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("add_item_modal_second.price_no_number_text")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
         ],
-  flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral
       });
       return;
     }
@@ -56,12 +70,20 @@ module.exports = {
     //maybe in the next api update if(item_type == 'item_server') {
     if (itemType) {
       //Reply with Confirmation
-        await interaction.editReply({
+      await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`╔ ✅ ${await t("add_item_modal.confirm_label")} ✍️\`\`\``)
-            .setDescription(`╠ **Item Name:** ${itemName}\n╠ **Item Type:** Server\n╠ **Item Price:** ${itemPrice}\n╠ **Item Description:** ${itemDescription}\n╚ **Server Runtime:** ${itemRuntime}`)
+            .setTitle(`${await emojiManager.getEmoji("emoji_glass")} ${await t("add_item_modal.confirm_label")}`)
+            .addFields(
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("add_item_button.modal_name")}`, value: `\`\`\`js\n${itemName}\`\`\``, inline: true },
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} Typ`, value: `\`\`\`js\n$Server\`\`\``, inline: true },
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("add_item_button.modal_price")}`, value: `\`\`\`js\n${itemPrice}\`\`\``, inline: true },
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("add_item_button.modal_description")}`, value: `\`\`\`js\n${itemDescription}\`\`\``, inline: true },
+              { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("add_item_button.modal_runtime")}`, value: `\`\`\`js\n${itemRuntime}\`\`\``, inline: true }
+            )
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
         ],
         flags: MessageFlags.Ephemeral,
         components: [
@@ -69,13 +91,15 @@ module.exports = {
             new ButtonBuilder()
               .setStyle("Success")
               .setCustomId("addShopItemConfirm")
-              .setLabel(`${await t("add_item_modal.button_confirm_text")}`),
+              .setLabel(`${await t("add_item_modal.button_confirm_text")}`)
+              .setEmoji(confirmEmoji),
 
 
             new ButtonBuilder()
               .setStyle("Danger")
               .setCustomId("addShopItemCancel")
               .setLabel(`${await t("add_item_modal.button_cancel_text")}`)
+              .setEmoji(denyEmoji)
           )
         ],
       });

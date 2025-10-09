@@ -38,8 +38,6 @@ module.exports = {
         const guild = interaction.guild;
         const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
 
-        let canvas = new CanvasPreset(user)
-
         const accountCreationModal = new ModalBuilder()
             .setCustomId("creationModal")
             .setTitle(`${await t("account_manager_modal.main_label")}`);

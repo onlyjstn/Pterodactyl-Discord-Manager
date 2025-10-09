@@ -19,5 +19,8 @@
   "emoji_clipboard": { "id": "<:nx_clipboard:1421990662554779790>", "emoji": "📋"},
   "emoji_trash": { "id": "<:nx_trash:1422008102944768050>", "emoji": "🗑️"},
   "emoji_creditcard": { "id": "<:nx_creditcard:1421990670305853510>", "emoji": "💳"},
-  "emoji_warning": { "id": "<:nx_warning:1421994990502023279>", "emoji": "⚠️"}
+  "emoji_warning": { "id": "<:nx_warning:1421994990502023279>", "emoji": "⚠️"},
+  "emoji_glass": { "id": "<:nx_glass:1421990964611776632>", "emoji": "🔎"},
+  "emoji_confirm": { "id": "<:nx_checkmark:1421990660491444355>", "emoji": "✅"},
+  "emoji_deny": { "id": "<:nx_x:1422008124566540460>", "emoji": "❌"}
 }

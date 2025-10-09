@@ -1,7 +1,13 @@
 const { Client, Embed, EmbedBuilder, ButtonBuilder, ActionRowBuilder } = require("discord.js");
 const { PanelManager } = require("../classes/panelManager");
 const { TranslationManager } = require("../classes/translationManager");
+const { EmojiManager } = require("../classes/emojiManager")
 var CronJob = require('cron').CronJob;
+
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
 
 module.exports = {
   customId: "dailyRuntime",
@@ -9,12 +15,14 @@ module.exports = {
    *
    * @param {PanelManager} panel
    * @param {Client} client
+   * @param {EmojiManager} emojiManager
    */
-  async execute(client, panel, database) {
+  async execute(client, panel, database, emojiManager) {
     //Every Day at midnight
     var job = new CronJob(
       "0 0 0 * * *",
       async function () {
+        const serverIconURL = undefined;
         let suspensionList = await panel.getRuntimeList(), deletionList = await panel.getDeletionList(), currentDate = new Date().setHours(0, 0, 0, 0), reminderDate = new Date(new Date().getTime() - 2 * 86400000)
         // Checks for runtimes in the system.
         console.log("Checking for runtime...");
@@ -47,21 +55,23 @@ module.exports = {
               await user.send({
                 embeds: [
                   new EmbedBuilder()
-                    .setTitle(`\`\`\`🕐 ${await t("server_manager.main_label")} 🕐\`\`\``)
-                    .setDescription(`\`\`\`${await t("reminder.text")}\`\`\``)
+                    .setTitle(`${await emojiManager.getEmoji("emoji_logo")}  ${await t("server_manager.main_label")}`)
+                    .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("reminder.text")}**`)
                     .addFields([
                       {
-                        name: `\`\`\`🖥️ ${await t("add_item_button.modal_name")}\`\`\``,
-                        value: `${name}`,
+                        name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("add_item_button.modal_name")}**`,
+                        value: `\`\`\`js\n${name}\`\`\``,
                         inline: true
                       },
                       {
-                        name: `\`\`\`🕐 ${await t("serverinfo.suspension_label")}\`\`\``,
+                        name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("serverinfo.suspension_label")}**`,
                         value: `<t:${Math.floor(new Date(date).setHours(0, 0, 0, 0) / 1000)}>`,
                         inline: false
                       }
                     ])
                     .setColor("Red")
+                    .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                    .setTimestamp()
                 ]
               })
             } catch (error) {

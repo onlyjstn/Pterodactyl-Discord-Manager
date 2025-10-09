@@ -8,6 +8,13 @@ const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, MessageFlags } = require("discord.js")
 
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const { EmojiManager } = require("./../classes/emojiManager")
+
 module.exports = {
   customId: "creationModal",
   /**
@@ -22,12 +29,15 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t 
+   * @param {EmojiManager} emojiManager
    * @returns
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
   await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     //Get Modal Data
     let { fields, user: { id, tag }, user } = interaction, eMail = fields.getTextInputValue("usereMail"), name = fields.getTextInputValue("userName"), fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     //Add User to Database and API
     let status, userRequest
     try {
@@ -45,9 +55,11 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           new EmbedBuilder()
-            .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-            .setDescription(`\`\`\`${await t("account_manager_events.account_creation_fail_text")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("account_manager_events.account_creation_fail_text")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
         ],
     flags: MessageFlags.Ephemeral,
       });
@@ -67,10 +79,15 @@ module.exports = {
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
-          .setTitle(`\`\`\`🤵 ${await t("account_manager_events.account_creation_success_label")} 🤵\`\`\``)
-          .setDescription(`\`\`\`${await t("account_manager_events.account_creation_success_text")} ${password}\n${await t("account_manager_events.account_creation_success_text_two")} ${process.env.PTERODACTYL_API_URL}\`\`\``)
+          .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("account_manager_events.account_creation_success_label")}`)
+          .addFields(
+            { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("account_manager_events.account_creation_success_text")}`, value: `\`\`\`js\n${password}\`\`\`` },
+            { name: `${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("account_manager_events.account_creation_success_text_two")}`, value: `\`\`\`${process.env.PTERODACTYL_API_URL}\`\`\`` }
+          )
           .setURL(process.env.PTERODACTYL_API_URL)
           .setColor(accentColor ? accentColor : 0xe6b04d)
+          .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+          .setTimestamp()
       ],
   flags: MessageFlags.Ephemeral
     });

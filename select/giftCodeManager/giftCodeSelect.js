@@ -52,20 +52,7 @@ module.exports = {
             .setTimestamp()
             .setFooter({ text: giftCodes[interaction.values].code, iconURL: serverIconURL })
 
-        //Emoji parser
-        function parseEmoji(raw) {
-            if (!raw) return null;
-            if (typeof raw === "string") {
-                const m = raw.match(/<a?:([^:>]+):(\d+)>/);
-                if (m) return { id: m[2], name: m[1], animated: raw.startsWith("<a:") };
-                return raw; // Unicode
-            } else if (typeof raw === "object" && raw.id) {
-                return { id: raw.id, name: raw.name || undefined, animated: !!raw.animated };
-            }
-            return null;
-        }
-
-        const trashEmoji = parseEmoji(await emojiManager.getEmoji("emoji_trash")) || "🗑️";
+        const trashEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_trash")) || "🗑️";
 
         await interaction.editReply({
             embeds: [giftCodesEmbed],
