@@ -7,6 +7,13 @@ const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
+
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const { EmojiManager } = require("./../classes/emojiManager")
 // Latenz oder Umlaufzeit
 module.exports = {
   data: new SlashCommandBuilder()
@@ -23,42 +30,47 @@ module.exports = {
    * @param {EconomyManager} economyManager 
    * @param {LogManager} logManager 
    * @param {TranslationManager} t
+   * @param {EmojiManager} emojiManager
    * @returns 
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     //Reply to User and send Buttons
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
-        .setTitle(`\`\`\`🌍 ${await t("language.language_label")} 🌍\`\`\``)
-        .setDescription(`\`\`\`${await t("language.language_text")}\`\`\``)
-        .setColor(accentColor ? accentColor : 0xe6b04d)
+          .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("language.language_label")}`)
+          .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("language.language_text")}**`)
+          .setColor(accentColor ? accentColor : 0xe6b04d)
+          .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+          .setTimestamp()
       ],
       components: [
         new ActionRowBuilder()
           .addComponents(
             new ButtonBuilder()
-            .setStyle("Success")
-            .setLabel("🇩🇪 German")
-            .setDisabled(false)
-            .setCustomId("de"),
+              .setStyle("Success")
+              .setLabel("🇩🇪 German")
+              .setDisabled(false)
+              .setCustomId("de"),
 
             new ButtonBuilder()
-            .setStyle("Success")
-            .setLabel("🇬🇧 English")
-            .setDisabled(false)
-            .setCustomId("en"),
+              .setStyle("Success")
+              .setLabel("🇬🇧 English")
+              .setDisabled(false)
+              .setCustomId("en"),
 
             new ButtonBuilder()
-            .setStyle("Success")
-            .setLabel("🇫🇷 French")
-            .setDisabled(false)
-            .setCustomId("fr"),
+              .setStyle("Success")
+              .setLabel("🇫🇷 French")
+              .setDisabled(false)
+              .setCustomId("fr"),
           )
       ],
-  flags: MessageFlags.Ephemeral
+      flags: MessageFlags.Ephemeral
     });
   },
 };

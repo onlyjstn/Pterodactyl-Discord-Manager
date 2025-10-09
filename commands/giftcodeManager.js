@@ -10,7 +10,9 @@ const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRo
 const dotenv = require("dotenv");
 dotenv.config({
     path: "./config.env",
-  });
+});
+
+const { EmojiManager } = require("./../classes/emojiManager")
 
 
 module.exports = {
@@ -29,11 +31,15 @@ module.exports = {
     * @param {LogManager} logManager 
     * @param {DataBaseInterface} databaseInterface 
     * @param {TranslationManager} t
+    * @param {GiftCodeManager} giftCodeManager
+    * @param {EmojiManager} emojiManager
     * @returns 
     */
-    async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager) {
+    async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
         let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+        const guild = interaction.guild;
+        const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
         let userData = await databaseInterface.getObject(userId)
 
         let giftCodes = await databaseInterface.getObject("gift_codes_list")
@@ -41,13 +47,14 @@ module.exports = {
 
         //Check if User is an Admin
         if (!process.env.ADMIN_LIST.includes(userId)) {
-            //Reply that the User is no Admin
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
-                        .setTitle(`\`\`\`⛔ ${await t("errors.no_admin_label")} ⛔\`\`\``)
-                        .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
+                        .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.no_admin_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+                        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("errors.no_admin_text")}**`)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
+                        .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                        .setTimestamp()
                 ],
                 flags: MessageFlags.Ephemeral,
             });
@@ -58,17 +65,23 @@ module.exports = {
 
 
         let giftCodesEmbed = new EmbedBuilder()
-            .setTitle(`\`\`\`🎁 ${await t("giftcode_manager.main_label")} 🎁\`\`\``)
-            .setDescription(`\`\`\`${await t("giftcode_manager.main_text")} ${giftCodes ? giftCodes.length : 0} ${await t("giftcode_manager.main_text_two")}\`\`\``)
+            .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("giftcode_manager.main_label")}`)
+            .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("giftcode_manager.main_text")}** \`${giftCodes ? giftCodes.length : 0}\` **${await t("giftcode_manager.main_text_two")}**`)
             .setColor(accentColor ? accentColor : 0xe6b04d)
+            .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+            .setTimestamp()
 
         let giftCodesMenu = new StringSelectMenuBuilder().setCustomId("giftCodeSelect")
 
+        const plusEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_arrow_down_right")) || "➕";
+        const giftEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_gift")) || "🎁";
+
         giftCodesMenu.addOptions([
             {
-                label: `➕ ${await t("giftcode_manageradd_item_label")}`,
+                label: `${await t("giftcode_manageradd_item_label")}`,
                 description: `${await t("giftcode_manageradd_item_text")}`,
-                value: `addCode`
+                value: `addCode`,
+                emoji: plusEmoji
             }
         ])
 
@@ -76,17 +89,18 @@ module.exports = {
         for (let i = 0; i < 24 && i < giftCodes.length; i++) {
             giftCodesEmbed.addFields([
                 {
-                    name: `🎁 #${i}: ${giftCodes[i].code}`,
-                    value: `\`\`\`📋 Code: ${giftCodes[i].code}\n🪙 Value: ${giftCodes[i].value} Coins\`\`\``,
-                    inline: false
+                    name: `${await emojiManager.getEmoji("emoji_gift")} #${i}: ${giftCodes[i].code}`,
+                    value: `\`\`\`Code: ${giftCodes[i].code}\nValue: ${giftCodes[i].value} Coins\`\`\``,
+                    inline: false,
                 }
             ])
 
             giftCodesMenu.addOptions([
                 {
-                    label: `🎁 #${i}: ${giftCodes[i].code}`,
+                    label: `#${i}: ${giftCodes[i].code}`,
                     description: `${giftCodes[i].code}`,
-                    value: `${i}`
+                    value: `${i}`,
+                    emoji: giftEmoji
                 }
             ])
         }
