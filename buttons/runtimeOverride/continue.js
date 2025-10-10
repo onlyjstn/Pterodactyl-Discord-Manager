@@ -8,6 +8,13 @@ const { LogManager } = require("../../classes/logManager")
 const { DataBaseInterface } = require("../../classes/dataBaseInterface")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const { EmojiManager } = require("../../classes/emojiManager")
+
 module.exports = {
   customId: "overrideTrue",
 
@@ -22,9 +29,17 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface
    * @param {TranslationManager} t
+   * @param {GiftCodeManager} giftCodeManager
+   * @param {EmojiManager} emojiManager
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, uuid, serverIdentifier, runtime, price) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral }), { user: { accentColor, id, tag }, channel } = interaction
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager, uuid, serverIdentifier, runtime, price) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    const user = interaction.user;
+    const id = user.id;
+    const fetchedUser = await user.fetch(true);
+    const { accentColor } = fetchedUser;
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined;
 
     //Get ServerUserId
     let userId = await panel.getUserIDfromUUID(uuid)
@@ -43,9 +58,11 @@ module.exports = {
     await interaction.editReply({
       embeds: [
         new EmbedBuilder()
-        .setTitle(`\`\`\`✅ ${await t("override_runtime.override_label")} ✅\`\`\``)
-        .setDescription(`\`\`\`${await t("override_runtime.override_text")}\`\`\``)
-        .setColor(accentColor ? accentColor : 0xe6b04d)
+          .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("override_runtime.override_label")}`)
+          .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("override_runtime.override_text")}**`)
+          .setColor(accentColor ? accentColor : 0xe6b04d)
+          .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+          .setTimestamp()
       ],
       flags: MessageFlags.Ephemeral
     })
