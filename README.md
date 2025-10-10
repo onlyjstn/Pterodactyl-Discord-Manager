@@ -54,6 +54,9 @@ PRICE_OFFSET=0.75
 # Discord user IDs allowed to manage coins and the shop (comma-separated list).
 ADMIN_LIST=[]
 
+#Set the Text which should appear in embed footers
+FOOTER_TEXT = ""
+
 # Default language ("en-US", "de-DE", or "fr-FR").
 DEFAULT_LANGUAGE="en-US"
 
