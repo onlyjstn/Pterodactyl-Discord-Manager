@@ -10,7 +10,8 @@ It includes the following features:
 - **Server management and runtime control system**  
 - **Shop management tools** for administrators  
 - **Coin leaderboard**  
-- **Voice activity rewards** (earn coins by being active in voice channels)  
+- **Giftcode system**
+- **Administrative Tools**
 
 Currently supports **three languages**:  
 **German (de-DE)**, **English (en-US)**, and **French (fr-FR)** — selectable via the `/language` command.
@@ -80,7 +81,17 @@ PARTNER_TEXT=""
    ```bash
    node bot.js
    ```
-
+5. (Optional) **Configure Emojis and/or Language:**
+   **Navigate to** `translations/emojis.json` and either configure the Standard Emojis by **editing them directly in the File** 
+   or use **custom Emojis** by filling the **ID Field**. For Example:
+   ```json
+   "emoji_play": { "id": "<:emojiName:12345677>", "emoji": "▶️"},
+   ```
+   For **animated Emojis:**
+   ```json
+   "emoji_play": { "id": "<a:emojiName:12345677>", "emoji": "▶️"},
+   ```
+   
 ---
 
 ## Notes
