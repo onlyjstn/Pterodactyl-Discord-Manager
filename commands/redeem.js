@@ -8,6 +8,13 @@ const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
 
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env",
+});
+
+const { EmojiManager } = require("./../classes/emojiManager")
+
 // Redeem Command
 module.exports = {
     data: new SlashCommandBuilder()
@@ -28,11 +35,15 @@ module.exports = {
      * @param {LogManager} logManager 
      * @param {DataBaseInterface} databaseInterface 
      * @param {TranslationManager} t 
+     * @param {GiftCodeManager} giftCodeManager
+     * @param {EmojiManager} emojiManager
      * @returns 
      */
-    async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager) {
+    async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
     await interaction.deferReply({ flags: MessageFlags.Ephemeral })
         let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
+        const guild = interaction.guild;
+        const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
         let userData = await databaseInterface.getObject(userId), utility = new UtilityCollection(), code = interaction.options.getString("code")
 
         //Check if User has an Account
@@ -40,9 +51,11 @@ module.exports = {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
-                        .setTitle(`\`\`\`⛔ ${await t("errors.no_account_label")} ⛔\`\`\``)
-                        .setDescription(`\`\`\`${await t("coins.no_account_text")}\`\`\``)
+                        .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.no_account_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+                        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("coins.no_account_text")}**`)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
+                        .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                        .setTimestamp()
                 ],
                 flags: MessageFlags.Ephemeral
             })
@@ -56,9 +69,11 @@ module.exports = {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
-                        .setTitle(`\`\`\`⛔ ${await t("errors.error_label")} ⛔\`\`\``)
-                        .setDescription(`\`\`\`${await t("giftcode_manager.non_existing_code")}\`\`\``)
+                        .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.error_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+                        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("giftcode_manager.non_existing_code")}**`)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
+                        .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                        .setTimestamp()
                 ],
                 flags: MessageFlags.Ephemeral
             })
@@ -77,9 +92,11 @@ module.exports = {
                 flags: MessageFlags.Ephemeral,
                 embeds: [
                     new EmbedBuilder()
-                        .setTitle(`\`\`\`✅ ${await t("giftcode_manager.success_label")} ✅\`\`\``)
-                        .setDescription(`\`\`\`${await t("giftcode_manager.success_text")} ${codeList[index].value} Coins!\`\`\``)
+                        .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("giftcode_manager.success_label")}`)
+                        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("giftcode_manager.success_text")} **${codeList[index].value}** Coins!`)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
+                        .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                        .setTimestamp()
                 ]
             })
             return;
@@ -90,9 +107,11 @@ module.exports = {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
-                        .setTitle(`\`\`\`⚠️ ${await t("giftcode_manager.already_used_code_label")} ⚠️\`\`\``)
-                        .setDescription(`\`\`\`${await t("giftcode_manager.already_used_code")}\`\`\``)
+                        .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("giftcode_manager.already_used_code_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+                        .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("giftcode_manager.already_used_code")}**`)
                         .setColor(accentColor ? accentColor : 0xe6b04d)
+                        .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                        .setTimestamp()
                 ],
                 flags: MessageFlags.Ephemeral
             })
@@ -106,9 +125,11 @@ module.exports = {
             flags: MessageFlags.Ephemeral,
             embeds: [
                 new EmbedBuilder()
-                    .setTitle(`\`\`\`✅ ${await t("giftcode_manager.success_label")} ✅\`\`\``)
-                    .setDescription(`\`\`\`${await t("giftcode_manager.success_text")} ${codeList[index].value} Coins!\`\`\``)
+                    .setTitle(`${await emojiManager.getEmoji("emoji_logo")}  ${await t("giftcode_manager.success_label")}`)
+                    .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} ${await t("giftcode_manager.success_text")} **${codeList[index].value}** Coins!`)
                     .setColor(accentColor ? accentColor : 0xe6b04d)
+                    .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+                    .setTimestamp()
             ]
         })
 

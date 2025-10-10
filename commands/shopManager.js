@@ -10,8 +10,10 @@ const { BaseInteraction, Client, StringSelectMenuBuilder, EmbedBuilder, ActionRo
 const dotenv = require("dotenv");
 //Initializte DotEnv
 dotenv.config({
-  path: "../config.env",
+  path: "./config.env",
 });
+
+const { EmojiManager } = require("./../classes/emojiManager")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -29,24 +31,31 @@ module.exports = {
    * @param {LogManager} logManager 
    * @param {DataBaseInterface} databaseInterface 
    * @param {TranslationManager} t 
+   * @param {EmojiManager} emojiManager
    * @returns 
    */
-  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+  async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
     let { user: { id: userId, tag }, user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser, userData = await databaseInterface.getObject(userId)
+    const guild = interaction.guild;
+    const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
     let shopItems = await databaseInterface.getObject("shop_items_servers");
+    const playEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_play")) || "▶️";
+    const clipboardEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_clipboard")) || "📝";
     //Check if User is on the Admin List
+
     switch (process.env.ADMIN_LIST.includes(userId)) {
       case false: {
-        //Reply that the User is no Admin
         await interaction.editReply({
           embeds: [
             new EmbedBuilder()
-              .setTitle(`\`\`\`⛔ ${await t("errors.no_admin_label")} ⛔\`\`\``)
-              .setDescription(`\`\`\`${await t("errors.no_admin_text")}\`\`\``)
+              .setTitle(`${await emojiManager.getEmoji("emoji_error")} ${await t("errors.no_admin_label")} ${await emojiManager.getEmoji("emoji_error")}`)
+              .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("errors.no_admin_text")}**`)
               .setColor(accentColor ? accentColor : 0xe6b04d)
+              .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
+              .setTimestamp()
           ],
-            flags: MessageFlags.Ephemeral,
+          flags: MessageFlags.Ephemeral,
         });
         //Logging
         await logManager.logString(`${tag} tried to use /shop_manager without admin permissions`)
@@ -55,9 +64,10 @@ module.exports = {
       case true: {
         //Create Embed
         let shopEmbed = new EmbedBuilder()
-          .setTitle(`╔ :gear: ${await t("shop_manager.main_label")}`)
-          .setDescription(`╠ ${await t("shop_manager.main_text")}`)
+          .setTitle(`${await emojiManager.getEmoji("emoji_logo")} ${await t("shop_manager.main_label")}`)
+          .setDescription(`${await emojiManager.getEmoji("emoji_arrow_down_right")} **${await t("shop_manager.main_text")}**`)
           .setColor(accentColor ? accentColor : 0xe6b04d)
+          .setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL })
           .setTimestamp();
 
 
@@ -69,8 +79,9 @@ module.exports = {
         shopSelect.addOptions([
           {
             label: `${await t("shop_manager.add_item_label")}`,
-            description: `➕ ${await t("shop_manager.add_item_text")}`,
+            description: `${await t("shop_manager.add_item_text")}`,
             value: "addShopItem",
+            emoji: playEmoji,
           },
         ])
 
@@ -81,10 +92,11 @@ module.exports = {
             //Shop is empty
             shopEmbed.addFields([
               {
-                name: `╠ :x: ${await t("shop_manager.no_items_label")}`,
-                value: `╚ ${await t("shop_manager.no_items_text")}`,
+                name: `${await emojiManager.getEmoji("emoji_deny")} ${await t("shop_manager.no_items_label")}`,
+                value: `${await t("shop_manager.no_items_text")}`,
               },
             ]);
+            shopEmbed.setFooter({ text: process.env.FOOTER_TEXT, iconURL: serverIconURL }).setTimestamp()
 
             await interaction.editReply({
               embeds: [shopEmbed],
@@ -98,8 +110,9 @@ module.exports = {
               //Add embed fields
               shopEmbed.addFields([
                 {
-                  name: `\u200b`,  // \u200b is a whitespace character
-                  value: `\`\`\`╠ 📜 ${await t("add_item_button.modal_name")} ${item.data ? item.data.name : "N/A"}\n╠ 💵 ${await t("add_item_button.modal_price")} ${item.data ? item.data.price : "N/A"} Coins\n╠ 📖 ${await t("add_item_button.modal_description")} ${item.data ? item.data.description : "N/A"}\`\`\``,
+                  name: `${await emojiManager.getEmoji("emoji_file")} ${item.data ? item.data.name : "N/A"}`,
+                  value: `${await t("add_item_button.modal_price")}\`\`\`js\n${item.data ? item.data.price : "N/A"} Coins\`\`\`${await t("add_item_button.modal_description")}\`\`\`js\n${item.data ? item.data.description : "N/A"}\`\`\``,
+                  inline: true,
                 },
               ])
 
@@ -109,6 +122,7 @@ module.exports = {
                   label: `${await t("shop.item_label")} #${i}`,
                   description: `${item.data ? item.data.name : "N/A"}`,
                   value: `${i}`,
+                  emoji: clipboardEmoji,
                 },
               ])
             }
