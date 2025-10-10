@@ -36,14 +36,14 @@ module.exports = {
     * @returns 
     */
     async execute(interaction, client, panel, boosterManager, cacheManager, economyManager, logManager, databaseInterface, t, giftCodeManager, emojiManager) {
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral })
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral })
         let { user: { id: userId, tag }, user: user } = interaction, fetchedUser = await user.fetch(true), { accentColor } = fetchedUser
         const guild = interaction.guild;
         const serverIconURL = guild ? guild.iconURL({ dynamic: true }) : undefined
         let userData = await databaseInterface.getObject(userId)
 
         let giftCodes = await databaseInterface.getObject("gift_codes_list")
-        if(giftCodes == null) giftCodes = []
+        if (giftCodes == null) giftCodes = []
 
         //Check if User is an Admin
         if (!process.env.ADMIN_LIST.includes(userId)) {
@@ -73,15 +73,15 @@ module.exports = {
 
         let giftCodesMenu = new StringSelectMenuBuilder().setCustomId("giftCodeSelect")
 
-        const plusEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_arrow_down_right")) || "➕";
-        const giftEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_gift")) || "🎁";
+        const plusEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_arrow_down_right"));
+        const giftEmoji = emojiManager.parseEmoji(await emojiManager.getEmoji("emoji_gift"));
 
         giftCodesMenu.addOptions([
             {
                 label: `${await t("giftcode_manageradd_item_label")}`,
                 description: `${await t("giftcode_manageradd_item_text")}`,
                 value: `addCode`,
-                emoji: plusEmoji
+                emoji: plusEmoji,
             }
         ])
 
@@ -90,8 +90,8 @@ module.exports = {
             giftCodesEmbed.addFields([
                 {
                     name: `${await emojiManager.getEmoji("emoji_gift")} #${i}: ${giftCodes[i].code}`,
-                    value: `\`\`\`Code: ${giftCodes[i].code}\nValue: ${giftCodes[i].value} Coins\`\`\``,
-                    inline: false,
+                    value: `Code:\`\`\`js\n${giftCodes[i].code}\`\`\`Value: \`\`\`js\n${giftCodes[i].value} Coins\`\`\``,
+                    inline: true,
                 }
             ])
 
@@ -100,7 +100,7 @@ module.exports = {
                     label: `#${i}: ${giftCodes[i].code}`,
                     description: `${giftCodes[i].code}`,
                     value: `${i}`,
-                    emoji: giftEmoji
+                    emoji: giftEmoji,
                 }
             ])
         }
