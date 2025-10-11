@@ -7,12 +7,10 @@ const { LogManager } = require("./../classes/logManager")
 const { DataBaseInterface } = require("./../classes/dataBaseInterface")
 const { UtilityCollection } = require("./../classes/utilityCollection")
 const { BaseInteraction, Client, SelectMenuBuilder, EmbedBuilder, ActionRowBuilder, Base, SlashCommandBuilder, AttachmentBuilder, ButtonBuilder, MessageFlags } = require("discord.js")
-
 const dotenv = require("dotenv");
 dotenv.config({
   path: "./config.env",
 });
-
 const { EmojiManager } = require("./../classes/emojiManager")
 // Latenz oder Umlaufzeit
 module.exports = {
@@ -56,18 +54,34 @@ module.exports = {
               .setLabel("🇩🇪 German")
               .setDisabled(false)
               .setCustomId("de"),
-
             new ButtonBuilder()
               .setStyle("Success")
               .setLabel("🇬🇧 English")
               .setDisabled(false)
               .setCustomId("en"),
-
             new ButtonBuilder()
               .setStyle("Success")
               .setLabel("🇫🇷 French")
               .setDisabled(false)
               .setCustomId("fr"),
+            new ButtonBuilder()
+              .setStyle("Success")
+              .setLabel("🇪🇸 Spanish")
+              .setDisabled(false)
+              .setCustomId("es"),
+            new ButtonBuilder()
+              .setStyle("Success")
+              .setLabel("🇳🇱 Dutch")
+              .setDisabled(false)
+              .setCustomId("nl"),
+          ),
+        new ActionRowBuilder()
+          .addComponents(
+            new ButtonBuilder()
+              .setStyle("Success")
+              .setLabel("🇵🇱 Polish")
+              .setDisabled(false)
+              .setCustomId("pl"),
           )
       ],
       flags: MessageFlags.Ephemeral
